@@ -6,12 +6,12 @@
       "id": "DENS-001",
       "topic": "Measurement & density",
       "chapter": "1",
-      "text": "A graduated cylinder is found to weigh 88.32 g. When 50 mL of water is added, the cylinder and water weigh 137.29 g. Next, 50 mL of antifreeze is added, and the cylinder and its contents now weigh 192.79 g. The cylinder is now found to contain 91.1 mL of liquid. What is the density in g/mL of the cylinder's contents? (Volumes of liquids mixed together are not always additive.)",
+      "text": "A graduated cylinder is found to weigh 88.32 g. When 50 mL of water is added, the cylinder and water weigh 137.29 g. Next, 50 mL of antifreeze is added, and the cylinder and its contents now weigh 192.79 g. The cylinder is now found to contain 91.1 mL of liquid. (Volumes of liquids mixed together are not always additive.)",
       "background_image": "",
       "parts": [
         {
           "part": "a",
-          "prompt": "What is the density of the cylinder's contents?",
+          "prompt": "What is the density of the cylinder's contents, in g/mL?",
           "type": "numeric",
           "value": 1.147,
           "units": "g/mL",
@@ -26,7 +26,7 @@
       "id": "ROD-001",
       "topic": "Measurement & density",
       "chapter": "1",
-      "text": "A bundle of cylindrical steel rods weighs 1850 kg. Each rod is 6.1 m long with a diameter of 25.4 mm. How many rods are in the bundle? The volume of a cylinder is πr^2h, where r is the radius and h is the height. The density of steel is 7930 kg/m^3.",
+      "text": "A bundle of cylindrical steel rods weighs 1850 kg. Each rod is 6.1 m long with a diameter of 25.4 mm. The volume of a cylinder is πr^2h, where r is the radius and h is the height. The density of steel is 7930 kg/m^3.",
       "background_image": "",
       "parts": [
         {
@@ -49,7 +49,7 @@
       "id": "NEON-001",
       "topic": "Atoms & scale",
       "chapter": "2",
-      "text": "A 1 L sample of gaseous neon contains 2.69 x 10^22 atoms per liter. The atomic radius of neon is 69 pm. The volume of a sphere is V = (4/3)πR^3, where R is the radius.",
+      "text": "A 1.00 L sample of gaseous neon contains 2.69 x 10^22 neon atoms. The atomic radius of neon is 69 pm. The volume of a sphere is V = (4/3)πR^3, where R is the radius.",
       "background_image": "",
       "parts": [
         {
@@ -86,7 +86,7 @@
       "id": "MEAS-001",
       "topic": "Measurement & density",
       "chapter": "1",
-      "text": "The gas tank of a certain luxury car holds 22.3 gallons according to the owner's manual. The density of gasoline is 0.8206 g/mL. (1 gal = 3.785 L)",
+      "text": "The gas tank of a certain luxury car holds 22.3 gallons according to the owner's manual. The density of gasoline is 0.8206 g/mL. (1 gal = 3.785 L; 1 lb = 453.6 g)",
       "background_image": "",
       "parts": [
         {
@@ -194,7 +194,7 @@
       "id": "MOLE-001",
       "topic": "Moles & molar mass",
       "chapter": "3",
-      "text": "A 55-kg woman has 7.5 x 10^-3 mol of hemoglobin (molar mass = 64,456 g/mol) in her blood.",
+      "text": "A 55-kg woman has 7.5 x 10^-3 mol of hemoglobin (molar mass = 64,456 g/mol) in her blood. (Avogadro's number = 6.022 x 10^23 per mol.)",
       "background_image": "",
       "parts": [
         {
@@ -225,7 +225,7 @@
       "id": "MOLE-002",
       "topic": "Moles & molar mass",
       "chapter": "3",
-      "text": "A tube of toothpaste contains 0.76 g of sodium monofluorophosphate (Na_2PO_3F) in 100 mL of toothpaste.",
+      "text": "A tube of toothpaste contains 0.76 g of sodium monofluorophosphate (Na_2PO_3F) in 100 mL of toothpaste. (Atomic masses in g/mol: Na 22.99, P 30.97, O 16.00, F 19.00. Avogadro's number = 6.022 x 10^23 per mol.)",
       "background_image": "",
       "parts": [
         {
@@ -256,7 +256,7 @@
       "id": "SOLN-001",
       "topic": "Solutions",
       "chapter": "3",
-      "text": "The US Environmental Protection Agency limits hexavalent chromium discharged into sewers to 0.50 mg of chromium per liter. A factory discharges its chromium as potassium dichromate, K_2Cr_2O_7.",
+      "text": "The US Environmental Protection Agency limits hexavalent chromium discharged into sewers to 0.50 mg of chromium per liter. A factory discharges its chromium as potassium dichromate, K_2Cr_2O_7. (Atomic mass of Cr = 52.00 g/mol.)",
       "background_image": "",
       "parts": [
         {
@@ -296,7 +296,7 @@
       "id": "SOLN-003",
       "topic": "Gases",
       "chapter": "9",
-      "text": "You need to prepare 1.25 L of 3.20 M hydrochloric acid by dissolving HCl gas in water. The HCl gas is measured at 30.0 °C and 745 torr. Assume ideal behavior. (R = 0.08206 L·atm/(mol·K); 760 torr = 1 atm)",
+      "text": "You need to prepare 1.25 L of 3.20 M hydrochloric acid by dissolving HCl gas in water. The HCl gas is measured at 30.0 °C and 745 torr. Assume ideal behavior. (R = 0.08206 L·atm/(mol·K); 760 torr = 1 atm; T in K = T in °C + 273.15)",
       "background_image": "",
       "parts": [
         {
@@ -316,7 +316,7 @@
       "id": "STOI-001",
       "topic": "Stoichiometry",
       "chapter": "4",
-      "text": "Silicon nitride is a very hard, heat-resistant ceramic used in jet-engine turbine blades. It forms by the reaction 3 Si(s) + 2 N_2(g) → Si_3N_4(s). A chemist reacts 2.00 g of Si with 1.50 g of N_2.",
+      "text": "Silicon nitride is a very hard, heat-resistant ceramic used in jet-engine turbine blades. It forms by the reaction 3 Si(s) + 2 N_2(g) → Si_3N_4(s). A chemist reacts 2.00 g of Si with 1.50 g of N_2. (Atomic masses in g/mol: Si 28.09, N 14.01.)",
       "background_image": "",
       "parts": [
         {
@@ -342,7 +342,7 @@
       "id": "STOI-002",
       "topic": "Stoichiometry",
       "chapter": "4",
-      "text": "Hydrogen and oxygen react to form water: 2 H_2(g) + O_2(g) → 2 H_2O(l). A mixture of 5.00 g of H_2 and 10.0 g of O_2 reacts completely.",
+      "text": "Hydrogen and oxygen react to form water: 2 H_2(g) + O_2(g) → 2 H_2O(l). A mixture of 5.00 g of H_2 and 10.0 g of O_2 reacts completely. (Atomic masses in g/mol: H 1.008, O 16.00.)",
       "background_image": "",
       "parts": [
         {
@@ -373,7 +373,7 @@
       "id": "STOI-003",
       "topic": "Stoichiometry",
       "chapter": "4",
-      "text": "Freon-12, CF_2Cl_2, is made by the reaction CCl_4 + 2 HF → CF_2Cl_2 + 2 HCl. A reaction of 32.9 g of CCl_4 with excess HF produces 12.5 g of CF_2Cl_2.",
+      "text": "Freon-12, CF_2Cl_2, is made by the reaction CCl_4 + 2 HF → CF_2Cl_2 + 2 HCl. A reaction of 32.9 g of CCl_4 with excess HF produces 12.5 g of CF_2Cl_2. (Atomic masses in g/mol: C 12.01, F 19.00, Cl 35.45.)",
       "background_image": "",
       "parts": [
         {
@@ -395,7 +395,7 @@
       "id": "GAS-001",
       "topic": "Gases",
       "chapter": "9",
-      "text": "An automobile air bag inflated to a volume of 66.8 L at 25 °C contains 77.8 g of nitrogen gas, N_2. (R = 8.314 J/(mol·K) = 8.314 Pa·m^3/(mol·K); 1 L = 10^-3 m^3)",
+      "text": "An automobile air bag inflated to a volume of 66.8 L at 25 °C contains 77.8 g of nitrogen gas, N_2. (R = 8.314 J/(mol·K) = 8.314 Pa·m^3/(mol·K); 1 L = 10^-3 m^3; atomic mass of N = 14.01 g/mol; T in K = T in °C + 273.15)",
       "background_image": "",
       "parts": [
         {
@@ -415,7 +415,7 @@
       "id": "GAS-002",
       "topic": "Gases",
       "chapter": "9",
-      "text": "A weather balloon contains 8.80 mol of helium at a pressure of 0.992 atm and a temperature of 25 °C at ground level. (R = 0.08206 L·atm/(mol·K))",
+      "text": "A weather balloon contains 8.80 mol of helium at a pressure of 0.992 atm and a temperature of 25 °C at ground level. (R = 0.08206 L·atm/(mol·K); T in K = T in °C + 273.15)",
       "background_image": "",
       "parts": [
         {
@@ -435,7 +435,7 @@
       "id": "GAS-003",
       "topic": "Gases",
       "chapter": "9",
-      "text": "A high-altitude balloon is filled with 1.41 x 10^4 L of hydrogen at 21 °C and 745 torr. The balloon rises to a height of 20 km, where the temperature is −48 °C and the pressure is 63.1 torr.",
+      "text": "A high-altitude balloon is filled with 1.41 x 10^4 L of hydrogen at 21 °C and 745 torr. The balloon rises to a height of 20 km, where the temperature is −48 °C and the pressure is 63.1 torr. (T in K = T in °C + 273.15)",
       "background_image": "",
       "parts": [
         {
@@ -455,7 +455,7 @@
       "id": "GAS-004",
       "topic": "Gases",
       "chapter": "9",
-      "text": "A cylinder of medical oxygen has a volume of 35.4 L and contains O_2 at 151 atm and 25 °C.",
+      "text": "A cylinder of medical oxygen has a volume of 35.4 L and contains O_2 at 151 atm and 25 °C. (T in K = T in °C + 273.15)",
       "background_image": "",
       "parts": [
         {
@@ -475,7 +475,7 @@
       "id": "GAS-005",
       "topic": "Gases",
       "chapter": "9",
-      "text": "A 20.0-L cylinder holding 11.34 kg of butane, C_4H_10, is opened to the atmosphere. Gas escapes until the pressure in the cylinder equals atmospheric pressure, 0.983 atm, at 27 °C. (R = 0.08206 L·atm/(mol·K))",
+      "text": "A 20.0-L cylinder holding 11.34 kg of butane, C_4H_10, is opened to the atmosphere. Gas escapes until the pressure in the cylinder equals atmospheric pressure, 0.983 atm, at 27 °C. (R = 0.08206 L·atm/(mol·K); atomic masses in g/mol: C 12.01, H 1.008; T in K = T in °C + 273.15)",
       "background_image": "",
       "parts": [
         {
@@ -495,7 +495,7 @@
       "id": "GAS-006",
       "topic": "Gases",
       "chapter": "9",
-      "text": "As 1 g of radium decays over 1 year, it produces 1.16 x 10^18 alpha particles, and each one becomes an atom of helium gas. The helium occupies 125 mL at 25 °C. (R = 8.314 Pa·m^3/(mol·K))",
+      "text": "As 1 g of radium decays over 1 year, it produces 1.16 x 10^18 alpha particles, and each one becomes an atom of helium gas. The helium occupies 125 mL at 25 °C. (R = 8.314 Pa·m^3/(mol·K); Avogadro's number = 6.022 x 10^23 per mol; T in K = T in °C + 273.15; 1 mL = 10^-6 m^3)",
       "background_image": "",
       "parts": [
         {
@@ -515,7 +515,7 @@
       "id": "GAS-007",
       "topic": "Gases",
       "chapter": "9",
-      "text": "A balloon with a volume of 100.21 L at 21 °C and 0.981 atm is released and just clears the top of Mount Crumpit in British Columbia. At the top, its volume is 144.53 L and the temperature is 5.24 °C.",
+      "text": "A balloon with a volume of 100.21 L at 21 °C and 0.981 atm is released and just clears the top of Mount Crumpit in British Columbia. At the top, its volume is 144.53 L and the temperature is 5.24 °C. (T in K = T in °C + 273.15)",
       "background_image": "",
       "parts": [
         {
