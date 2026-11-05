@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Problem-Solving Coach</title>
+<style>
+:root {
+  --bg: #F5F3EE; --card: #FFFFFF; --ink: #1D2730; --muted: #5C6974; --line: #DAD5CB; --soft: #EFECE5;
+  --accent: #1C5E8A; --accent-ink: #FFFFFF; --ok: #2B7A4B; --ok-bg: #E3F2E8; --bad: #B8382A; --bad-bg: #FBE8E5;
+  --warn-bg: #FFF5DC; --hl-blue: #CFE2FA; --hl-blue-ink: #0D4A8F; --hl-orange: #FCE0C2; --hl-orange-ink: #8A4200;
+  --shadow: 0 1px 2px rgba(30,30,20,.06), 0 2px 8px rgba(30,30,20,.05);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14191E; --card: #1C232A; --ink: #E6EAED; --muted: #9AA6B0; --line: #33404B; --soft: #232C34;
+    --accent: #7CB6DE; --accent-ink: #0C1A24; --ok: #72C595; --ok-bg: #1B3326; --bad: #F08273; --bad-bg: #3A1F1C;
+    --warn-bg: #3A3220; --hl-blue: #1E3E62; --hl-blue-ink: #B9D8FA; --hl-orange: #553515; --hl-orange-ink: #FFCF9C;
+    --shadow: none;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 18px 16px 60px; }
+header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 20px; margin-bottom: 14px; }
+h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 700; font-size: 30px; margin: 0; letter-spacing: -0.01em; }
+.tag { margin: 2px 0 0; color: var(--muted); }
+.tabs { display: flex; gap: 4px; background: var(--soft); padding: 4px; border-radius: 10px; }
+.tabs button { border: 0; background: transparent; color: var(--muted); padding: 7px 14px; border-radius: 7px; font: inherit; font-weight: 600; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+.bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.bar label { font-weight: 600; }
+select, input[type=text], textarea { font: inherit; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; }
+select { max-width: 100%; }
+textarea { width: 100%; min-height: 84px; resize: vertical; line-height: 1.45; }
+input[type=text]:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: var(--accent); }
+.btn { font: inherit; font-weight: 600; font-size: 14.5px; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.small { font-size: 13px; padding: 4px 9px; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.btn.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.spacer { flex: 1; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; box-shadow: var(--shadow); }
+.problem { position: relative; }
+.problem.pinned { position: sticky; top: 0; z-index: 5; max-height: 42vh; overflow: auto; }
+.problem h2 { margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.ptext { font-size: 17.5px; line-height: 1.75; margin: 0; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.ptext .w { border-radius: 4px; padding: 1px 0; cursor: pointer; }
+.ptext .w.hb { background: var(--hl-blue); color: var(--hl-blue-ink); box-shadow: 0 0 0 2px var(--hl-blue); }
+.ptext .w.ho { background: var(--hl-orange); color: var(--hl-orange-ink); box-shadow: 0 0 0 2px var(--hl-orange); }
+.hltools { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; align-items: center; }
+.pen-blue.on { background: #2E78D6; border-color: #2E78D6; color: #fff; }
+.pen-orange.on { background: #D9771E; border-color: #D9771E; color: #fff; }
+.step { display: grid; grid-template-columns: 38px 1fr; gap: 0 12px; }
+.num { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; background: var(--soft); color: var(--muted); border: 2px solid var(--line); }
+.step.done .num { background: var(--ok); border-color: var(--ok); color: #fff; }
+.step h3 { margin: 4px 0 8px; font-size: 17px; }
+.step .why { color: var(--muted); font-size: 14.5px; margin: -4px 0 8px; }
+.step ul.tips { margin: 0 0 6px; padding-left: 20px; color: var(--muted); font-size: 14.5px; }
+.status { font-size: 13.5px; color: var(--muted); margin-top: 6px; }
+.status.ok { color: var(--ok); }
+.conf { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+.conf .btn { min-width: 38px; }
+/* drawing pad */
+.padtools { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin-bottom: 8px; }
+.padtools .sep { width: 1px; height: 24px; background: var(--line); margin: 0 4px; }
+.swatch { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; padding: 0; }
+.swatch.on { outline: 3px solid var(--accent); outline-offset: 1px; }
+.padwrap { position: relative; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #fff; }
+.padwrap canvas { display: block; width: 100%; height: auto; touch-action: none; cursor: crosshair; }
+.padwrap .textin { position: absolute; font: 18px "Segoe UI", system-ui, sans-serif; padding: 2px 4px; border: 1px dashed #1C5E8A; background: #fff; color: #111; min-width: 120px; }
+.fillrow { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin: -2px 0 8px; padding: 6px 10px; background: var(--soft); border-radius: 8px; }
+.pats { display: flex; flex-wrap: wrap; gap: 5px; }
+.patbtn { padding: 2px; border: 2px solid var(--line); border-radius: 6px; background: #fff; cursor: pointer; line-height: 0; }
+.patbtn.on { border-color: var(--accent); outline: 2px solid var(--accent); }
+.patbtn canvas { width: 44px; height: 26px; border-radius: 3px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; min-height: 30px; align-items: center; }
+.chip { background: #1C5E8A; color: #fff; border-radius: 6px; padding: 4px 10px; font-size: 14px; cursor: grab; touch-action: none; user-select: none; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chips .empty { color: var(--muted); font-size: 14px; }
+.ghost { position: fixed; pointer-events: none; z-index: 50; opacity: .9; transform: translate(-50%, -50%); }
+/* step 8 */
+.lock { background: var(--warn-bg); border-radius: 10px; padding: 12px 14px; }
+.lock b { display: block; margin-bottom: 4px; }
+.lock ul { margin: 4px 0 0; padding-left: 20px; }
+.line { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; background: var(--soft); }
+.lhead { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+.lhead .kind { font-weight: 700; font-size: 14px; }
+.lhead input { flex: 1; min-width: 160px; }
+.xbtn { border: 0; background: transparent; color: var(--muted); font-size: 20px; cursor: pointer; line-height: 1; padding: 2px 6px; }
+.xbtn:hover { color: var(--bad); }
+.chain { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.chain .lbl { font-size: 12.5px; color: var(--muted); display: block; margin-bottom: 2px; }
+.chain .times { font-size: 20px; color: var(--muted); }
+.frac { display: inline-grid; grid-template-columns: auto auto; gap: 3px 4px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 6px; position: relative; }
+.frac .rule { grid-column: 1 / -1; height: 2px; background: var(--ink); opacity: .6; }
+.frac input { width: 92px; padding: 4px 6px; font-size: 14.5px; }
+.frac input.n { width: 84px; text-align: right; }
+.frac .pw { position: absolute; top: -9px; right: -9px; font-size: 12px; padding: 0 2px; border-radius: 6px; }
+.frac .rmf { position: absolute; bottom: -10px; right: -8px; font-size: 16px; }
+.qty input { width: 150px; }
+.goal input { width: 120px; }
+.lmsg { margin-top: 8px; font-size: 14.5px; padding: 7px 10px; border-radius: 8px; }
+.lmsg.ok { background: var(--ok-bg); }
+.lmsg.bad { background: var(--bad-bg); }
+.lmsg.info { background: var(--card); border: 1px dashed var(--line); }
+.res { margin-top: 8px; font-size: 16px; }
+.res b { font-size: 17px; }
+.fx input.expr { width: 100%; font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 15px; }
+.fxrow { display: flex; gap: 8px; align-items: center; margin-top: 6px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
+.fxrow input { width: 130px; }
+.help { font-size: 13.5px; color: var(--muted); }
+code { font-family: ui-monospace, Consolas, monospace; background: var(--soft); padding: 0 4px; border-radius: 4px; font-size: .92em; }
+.parts h4 { margin: 16px 0 6px; font-size: 16px; }
+.part { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 10px; }
+.part:first-child { border-top: 0; margin-top: 0; }
+.ansrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ansrow input { width: 220px; }
+.fb { margin-top: 8px; padding: 7px 10px; border-radius: 8px; font-size: 15px; }
+.fb.ok { background: var(--ok-bg); color: var(--ok); font-weight: 600; }
+.fb.bad { background: var(--bad-bg); }
+.tries { font-size: 13.5px; color: var(--muted); }
+.reveal { margin-top: 8px; padding: 9px 12px; border-left: 4px solid var(--accent); background: var(--soft); border-radius: 0 8px 8px 0; white-space: pre-wrap; }
+.reveal b { display: block; margin-bottom: 2px; }
+.note { font-size: 14px; color: var(--muted); }
+.toast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 8px; font-size: 14.5px; z-index: 60; opacity: 0; transition: opacity .2s; pointer-events: none; max-width: 90vw; }
+.toast.show { opacity: 1; }
+/* instructor */
+.inst h2 { font-size: 19px; margin: 0 0 6px; }
+.inst p { margin: 6px 0; }
+table.cols { border-collapse: collapse; width: 100%; font-size: 14px; margin-top: 8px; }
+table.cols th, table.cols td { text-align: left; border-bottom: 1px solid var(--line); padding: 5px 8px; vertical-align: top; }
+table.cols th { color: var(--muted); font-weight: 600; }
+.errs { background: var(--bad-bg); border-radius: 8px; padding: 8px 12px; margin-top: 10px; }
+.errs ul { margin: 4px 0 0; padding-left: 20px; }
+.okbox { background: var(--ok-bg); border-radius: 8px; padding: 8px 12px; margin-top: 10px; }
+.preview { margin-top: 10px; font-size: 14.5px; }
+.preview .pp { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; }
+textarea.json { min-height: 220px; font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
+[hidden] { display: none !important; }
+@media (max-width: 600px) {
+  h1 { font-size: 25px; }
+  .step { grid-template-columns: 1fr; }
+  .num { margin-bottom: 4px; }
+  .ptext { font-size: 16.5px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Problem-Solving Coach</h1>
+      <p class="tag">Read it, picture it, plan it. Then solve it.</p>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" id="tab-solve" aria-selected="true">Solve</button>
+      <button role="tab" id="tab-inst" aria-selected="false">Instructor</button>
+    </nav>
+  </header>
+
+  <section id="view-solve">
+    <div class="bar">
+      <label for="pick">Problem</label>
+      <select id="pick"></select>
+      <span class="spacer"></span>
+      <button class="btn" id="btn-pdf">Export PDF</button>
+      <button class="btn" id="btn-reset">Start over</button>
+    </div>
+    <div class="card problem" id="prob"></div>
+    <div id="steps"></div>
+  </section>
+
+  <section id="view-inst" class="inst" hidden></section>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const UE = (() => {
+  // dims: [length m, mass g, time s, amount mol, count, temperature K]
+  // (Copied from Factor-Label-Workbench; temperature dimension added for Problem-Solving Coach.)
+  const Dm = (m = 0, g = 0, s = 0, mol = 0, n = 0, k = 0) => [m, g, s, mol, n, k];
+  const NA = 6.02214076e23;
+  const BASE = {
+    m: { f: 1, d: Dm(1) }, g: { f: 1, d: Dm(0, 1) }, s: { f: 1, d: Dm(0, 0, 1) },
+    L: { f: 1e-3, d: Dm(3) }, mol: { f: 1, d: Dm(0, 0, 0, 1) },
+    J: { f: 1000, d: Dm(2, 1, -2) }, cal: { f: 4184, d: Dm(2, 1, -2) },
+    Pa: { f: 1000, d: Dm(-1, 1, -2) }, W: { f: 1000, d: Dm(2, 1, -3) },
+    K: { f: 1, d: Dm(0, 0, 0, 0, 0, 1) }
+  };
+  const GAL = 3.785411784e-3;
+  const OTHER = {
+    in: { f: 0.0254, d: Dm(1) }, ft: { f: 0.3048, d: Dm(1) }, yd: { f: 0.9144, d: Dm(1) },
+    mi: { f: 1609.344, d: Dm(1) }, "Å": { f: 1e-10, d: Dm(1) },
+    lb: { f: 453.59237, d: Dm(0, 1) }, oz: { f: 28.349523125, d: Dm(0, 1) },
+    ton: { f: 907184.74, d: Dm(0, 1) }, t: { f: 1e6, d: Dm(0, 1) },
+    amu: { f: 1.66053906660e-24, d: Dm(0, 1) },
+    min: { f: 60, d: Dm(0, 0, 1) }, h: { f: 3600, d: Dm(0, 0, 1) },
+    day: { f: 86400, d: Dm(0, 0, 1) }, wk: { f: 604800, d: Dm(0, 0, 1) },
+    yr: { f: 365.25 * 86400, d: Dm(0, 0, 1) },
+    gal: { f: GAL, d: Dm(3) }, qt: { f: GAL / 4, d: Dm(3) }, pt: { f: GAL / 8, d: Dm(3) },
+    cup: { f: GAL / 16, d: Dm(3) }, floz: { f: GAL / 128, d: Dm(3) },
+    tbsp: { f: GAL / 256, d: Dm(3) }, tsp: { f: GAL / 768, d: Dm(3) },
+    cc: { f: 1e-6, d: Dm(3) },
+    M: { f: 1000, d: Dm(-3, 0, 0, 1) }, mM: { f: 1, d: Dm(-3, 0, 0, 1) },   // molarity (added for Problem-Solving Coach)
+    atm: { f: 101325e3, d: Dm(-1, 1, -2) }, torr: { f: 101325e3 / 760, d: Dm(-1, 1, -2) },
+    mmHg: { f: 133.322387415e3, d: Dm(-1, 1, -2) }, psi: { f: 6894.757293e3, d: Dm(-1, 1, -2) },
+    bar: { f: 1e8, d: Dm(-1, 1, -2) }, Cal: { f: 4184e3, d: Dm(2, 1, -2) },
+    atoms: { f: 1, d: Dm(0, 0, 0, 0, 1) }, molecules: { f: 1, d: Dm(0, 0, 0, 0, 1) },
+    ions: { f: 1, d: Dm(0, 0, 0, 0, 1) }, particles: { f: 1, d: Dm(0, 0, 0, 0, 1) },
+    "formula units": { f: 1, d: Dm(0, 0, 0, 0, 1) }
+  };
+  const ALIAS = {
+    hr: "h", hrs: "h", hour: "h", hours: "h", sec: "s", secs: "s", second: "s", seconds: "s",
+    mins: "min", minute: "min", minutes: "min", days: "day", d: "day", week: "wk", weeks: "wk",
+    year: "yr", years: "yr", y: "yr", lbs: "lb", pound: "lb", pounds: "lb", ounce: "oz", ounces: "oz",
+    tons: "ton", inch: "in", inches: "in", foot: "ft", feet: "ft", yard: "yd", yards: "yd",
+    mile: "mi", miles: "mi", gallon: "gal", gallons: "gal", quart: "qt", quarts: "qt",
+    pint: "pt", pints: "pt", cups: "cup", "fl-oz": "floz", "fl.oz": "floz", Torr: "torr",
+    "mm-Hg": "mmHg", u: "amu", Da: "amu", A: "Å", angstrom: "Å",
+    atom: "atoms", molecule: "molecules", ion: "ions", particle: "particles", fu: "formula units",
+    l: "L", ml: "mL", dl: "dL", cl: "cL", kl: "kL", ul: "μL", "μl": "μL", "µl": "μL",
+    moles: "mol", mole: "mol", grams: "g", gram: "g", meter: "m", meters: "m", liter: "L", liters: "L"
+  };
+  const PREFIX = [["da", 10], ["T", 1e12], ["G", 1e9], ["M", 1e6], ["k", 1e3], ["h", 1e2], ["d", 0.1],
+    ["c", 0.01], ["m", 1e-3], ["μ", 1e-6], ["µ", 1e-6], ["u", 1e-6], ["n", 1e-9], ["p", 1e-12], ["f", 1e-15]];
+
+  function lookup(tok) {
+    if (ALIAS[tok]) tok = ALIAS[tok];
+    if (BASE[tok]) return { sym: tok, ...BASE[tok] };
+    if (OTHER[tok]) return { sym: tok, ...OTHER[tok] };
+    for (const [p, v] of PREFIX) {
+      if (tok.length > p.length && tok.startsWith(p)) {
+        const rest = tok.slice(p.length);
+        if (BASE[rest]) {
+          const pp = (p === "u" || p === "µ") ? "μ" : p;
+          return { sym: pp + rest, f: v * BASE[rest].f, d: BASE[rest].d };
+        }
+      }
+    }
+    return null;
+  }
+
+  // ---- chemistry ----
+  const AW = { H: 1.008, He: 4.0026, Li: 6.94, Be: 9.0122, B: 10.81, C: 12.011, N: 14.007, O: 15.999, F: 18.998, Ne: 20.180,
+    Na: 22.990, Mg: 24.305, Al: 26.982, Si: 28.085, P: 30.974, S: 32.06, Cl: 35.45, Ar: 39.948, K: 39.098, Ca: 40.078,
+    Sc: 44.956, Ti: 47.867, V: 50.942, Cr: 51.996, Mn: 54.938, Fe: 55.845, Co: 58.933, Ni: 58.693, Cu: 63.546, Zn: 65.38,
+    Ga: 69.723, Ge: 72.630, As: 74.922, Se: 78.971, Br: 79.904, Kr: 83.798, Rb: 85.468, Sr: 87.62, Y: 88.906, Zr: 91.224,
+    Nb: 92.906, Mo: 95.95, Tc: 98, Ru: 101.07, Rh: 102.91, Pd: 106.42, Ag: 107.87, Cd: 112.41, In: 114.82, Sn: 118.71,
+    Sb: 121.76, Te: 127.60, I: 126.90, Xe: 131.29, Cs: 132.91, Ba: 137.33, La: 138.91, Ce: 140.12, Pr: 140.91, Nd: 144.24,
+    Sm: 150.36, Eu: 151.96, Gd: 157.25, Hf: 178.49, Ta: 180.95, W: 183.84, Re: 186.21, Os: 190.23, Ir: 192.22, Pt: 195.08,
+    Au: 196.97, Hg: 200.59, Tl: 204.38, Pb: 207.2, Bi: 208.98, Po: 209, At: 210, Rn: 222, Ra: 226, Th: 232.04, U: 238.03, Pu: 244 };
+
+  function molarMass(formula) {
+    if (!formula) return null;
+    const f = formula.replace(/\s+/g, "");
+    const parts = f.split(/[·•*.]/);
+    let total = 0;
+    for (let part of parts) {
+      let mult = 1;
+      const lead = part.match(/^(\d+)(.*)$/);
+      if (lead) { mult = +lead[1]; part = lead[2]; }
+      const m = parseGroup(part);
+      if (m == null) return null;
+      total += mult * m;
+    }
+    return total;
+  }
+  function parseGroup(s) {
+    let i = 0;
+    function group() {
+      let sum = 0;
+      while (i < s.length && s[i] !== ")" && s[i] !== "]") {
+        let val;
+        if (s[i] === "(" || s[i] === "[") {
+          i++; val = group();
+          if (val == null || (s[i] !== ")" && s[i] !== "]")) return null;
+          i++;
+        } else {
+          const m = s.slice(i).match(/^([A-Z][a-z]?)/);
+          if (!m || AW[m[1]] == null) return null;
+          val = AW[m[1]]; i += m[1].length;
+        }
+        const n = s.slice(i).match(/^(\d+)/);
+        let k = 1;
+        if (n) { k = +n[1]; i += n[1].length; }
+        sum += val * k;
+      }
+      return sum;
+    }
+    if (!s) return null;
+    const v = group();
+    return (v != null && i === s.length) ? v : null;
+  }
+  const isFormula = (t) => /^[A-Z(\[]/.test(t) && molarMass(t) != null;
+
+  function parseEquation(eq) {
+    if (!eq || !eq.trim()) return null;
+    const sides = eq.split(/->|→|=>|=/);
+    if (sides.length !== 2) return null;
+    const coef = {};
+    for (const side of sides) {
+      for (let term of side.split(/\s\+\s|\s+\+\s*|\s*\+\s+/)) {
+        term = term.trim().replace(/\((s|l|g|aq)\)$/, "").trim();
+        if (!term) continue;
+        const m = term.match(/^(\d+(?:\.\d+)?)?\s*(.+)$/);
+        coef[m[2].trim()] = m[1] ? +m[1] : 1;
+      }
+    }
+    return coef;
+  }
+
+  // ---- numbers ----
+  function parseNum(str) {
+    if (str == null) return NaN;
+    let s = String(str).trim().replace(/,/g, "").replace(/−/g, "-");
+    if (!s) return NaN;
+    s = s.replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, "e$1")
+         .replace(/\s*[x×*·]\s*10([⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)/, (m, sup) => "e" + fromSup(sup));
+    if (!/^[+-]?(\d+\.?\d*|\.\d+)(e[+-]?\d+)?$/i.test(s)) return NaN;
+    return parseFloat(s);
+  }
+  const SUP = { "⁻": "-", "⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9" };
+  const fromSup = (s) => [...s].map(c => SUP[c] ?? c).join("");
+  const toSup = (n) => String(n).split("").map(c => ({ "-": "⁻", 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" })[c]).join("");
+
+  function fmt(x, sig = 4) {
+    if (!isFinite(x)) return "—";
+    if (x === 0) return "0";
+    const a = Math.abs(x);
+    if (a >= 1e-3 && a < 1e6) {
+      let s = Number(x.toPrecision(sig)).toString();
+      return s;
+    }
+    const [mant, ex] = x.toExponential(sig - 1).split("e");
+    return `${Number(mant)} × 10${toSup(+ex)}`;
+  }
+
+  // ---- unit expressions ----
+  // A side is a list of terms {sym, label, exp, f, d}; an expression map is key -> {sym,label,exp,f,d}
+  function tokenize(str) {
+    let s = String(str || "")
+      .replace(/formula\s+units?/gi, "fu")
+      .replace(/fl\.?\s+oz/gi, "floz")
+      .replace(/[²³¹⁰⁴⁵⁶⁷⁸⁹⁻]+/g, m => "^" + fromSup(m))
+      .replace(/([A-Za-z0-9)\]])[·•*.](\d*[A-Z])/g, "$1\u0001$2")
+      .replace(/[·•*×]/g, " ")
+      .replace(/\u0001/g, "·")
+      .replace(/\s*\^\s*/g, "^")
+      .replace(/\(|\)/g, " ");
+    return s.split(/\s+/).filter(Boolean);
+  }
+  function parseSide(str) {
+    const toks = tokenize(str);
+    const terms = [];
+    for (const raw of toks) {
+      if (raw === "1") continue;
+      if (/^of$/i.test(raw) && terms.length) continue;
+      const prev = terms[terms.length - 1];
+      // chemical label after a mass/amount/count/volume unit
+      if (prev && isFormula(raw) && labelable(prev)) { prev.label = prev.label ? prev.label + " " + raw : raw; continue; }
+      let m = raw.match(/^(.+?)\^(-?\d+)$/);
+      let base = raw, e = 1;
+      if (m) { base = m[1]; e = +m[2]; }
+      else {
+        const m2 = raw.match(/^([A-Za-zμµÅ]+?)(\d)$/);
+        if (m2 && lookup(m2[1]) && !isFormula(raw)) { base = m2[1]; e = +m2[2]; }
+      }
+      const u = lookup(base);
+      if (u && !(prev && prev.label && !m)) {
+        terms.push({ sym: u.sym, label: "", exp: e, f: u.f, d: u.d });
+      } else if (prev) {
+        prev.label = prev.label ? prev.label + " " + raw : raw;
+      } else {
+        return { error: `“${raw}” isn't a unit I recognize.` };
+      }
+    }
+    return { terms };
+  }
+  function labelable(t) {
+    const d = t.d;
+    const only = (i) => d.every((v, j) => (j === i ? v !== 0 : v === 0));
+    return only(1) || only(3) || only(4) || only(0) && d[0] === 3;
+  }
+  const keyOf = (t) => t.sym + (t.label ? "|" + t.label : "");
+
+  // parse "g/mL", "kg m^2/s^2", "mol NaCl/L solution"
+  function parseExpr(str) {
+    const parts = String(str || "").split("/");
+    const map = {};
+    const sides = [];
+    for (let i = 0; i < parts.length; i++) {
+      const r = parseSide(parts[i]);
+      if (r.error) return { error: r.error };
+      const sign = i === 0 ? 1 : -1;
+      for (const t of r.terms) addTerm(map, t, sign);
+      sides.push(r.terms);
+    }
+    return { map: clean(map), sides };
+  }
+  function addTerm(map, t, k) {
+    const key = keyOf(t);
+    if (!map[key]) map[key] = { sym: t.sym, label: t.label, f: t.f, d: t.d, exp: 0 };
+    map[key].exp += t.exp * k;
+  }
+  function clean(map) { for (const k in map) if (map[k].exp === 0) delete map[k]; return map; }
+  function mulMap(a, b, k = 1) {
+    const out = {};
+    for (const key in a) out[key] = { ...a[key] };
+    for (const key in b) {
+      if (!out[key]) out[key] = { ...b[key], exp: 0 };
+      out[key].exp += b[key].exp * k;
+    }
+    return clean(out);
+  }
+  function eqMap(a, b) {
+    const ka = Object.keys(a), kb = Object.keys(b);
+    if (ka.length !== kb.length) return false;
+    return ka.every(k => b[k] && b[k].exp === a[k].exp);
+  }
+  function siOf(map) {
+    let f = 1; const d = [0, 0, 0, 0, 0, 0];
+    for (const k in map) { const t = map[k]; f *= Math.pow(t.f, t.exp); t.d.forEach((v, i) => d[i] += v * t.exp); }
+    return { f, d };
+  }
+  function labelsOf(map) { return [...new Set(Object.values(map).map(t => t.label).filter(Boolean))].sort().join(","); }
+  const dimEq = (a, b) => a.every((v, i) => Math.abs(v - (b[i] || 0)) < 1e-9);
+
+  function unitText(t, exp) {
+    const e = exp ?? t.exp;
+    return (t.sym === "floz" ? "fl oz" : t.sym) + (Math.abs(e) !== 1 ? toSup(Math.abs(e)) : "") + (t.label ? " " + t.label : "");
+  }
+  function mapText(map) {
+    const num = [], den = [];
+    for (const k in map) { const t = map[k]; (t.exp > 0 ? num : den).push(unitText(t)); }
+    if (!num.length && !den.length) return "(no units)";
+    const n = num.length ? num.join("·") : "1";
+    return den.length ? `${n}/${den.length > 1 ? "(" + den.join("·") + ")" : den[0]}` : n;
+  }
+
+  // ---- equivalences: returns r such that 1 [N] = r [D]  (null if unknown) ----
+  function single(map) {
+    const ks = Object.keys(map);
+    return ks.length === 1 && map[ks[0]].exp === 1 ? map[ks[0]] : null;
+  }
+  function toMol(t) {
+    const d = t.d;
+    if (dimEq(d, [0, 1, 0, 0, 0])) { const M = molarMass(t.label); return M ? t.f / M : null; }
+    if (dimEq(d, [0, 0, 0, 1, 0])) return t.f;
+    if (dimEq(d, [0, 0, 0, 0, 1])) return t.f / NA;
+    return null;
+  }
+  function parseRelation(line) {
+    const m = String(line).split("=");
+    if (m.length !== 2) return null;
+    const a = parseQty(m[0]), b = parseQty(m[1]);
+    if (!a || !b || a.error || b.error) return null;
+    return { a, b, text: line.trim() };
+  }
+  function parseQty(str) {
+    const s = String(str || "").trim();
+    const m = s.match(/^([+-]?[\d.,]+(?:\s*(?:e|[x×*·]\s*10\s*\^?)\s*[+-]?\d+|\s*[x×*·]\s*10[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)?)\s*(.*)$/i);
+    if (!m) return { error: "Start with a number, like 3.75 lb." };
+    const v = parseNum(m[1]);
+    if (!isFinite(v)) return { error: "That number isn't readable." };
+    const u = parseExpr(m[2]);
+    if (u.error) return { error: u.error };
+    return { value: v, map: u.map, unitStr: m[2].trim() };
+  }
+  function compat(a, b) {
+    const sa = siOf(a), sb = siOf(b);
+    if (!dimEq(sa.d, sb.d)) return false;
+    const la = labelsOf(a), lb = labelsOf(b);
+    return la === lb || !la || !lb;
+  }
+  function equivalence(N, D, ctx = {}) {
+    const sN = siOf(N), sD = siOf(D);
+    if (compat(N, D)) return { r: sN.f / sD.f, kind: "unit" };
+    const n1 = single(N), d1 = single(D);
+    if (n1 && d1 && n1.label && d1.label) {
+      const mn = toMol(n1), md = toMol(d1);
+      if (mn != null && md != null) {
+        if (n1.label === d1.label) {
+          const kind = dimEq(n1.d, [0, 0, 0, 0, 1]) || dimEq(d1.d, [0, 0, 0, 0, 1]) ? "avogadro" : "molar mass";
+          return { r: mn / md, kind };
+        }
+        const co = ctx.coef;
+        if (co && co[n1.label] && co[d1.label] && dimEq(n1.d, [0, 0, 0, 1, 0]) && dimEq(d1.d, [0, 0, 0, 1, 0])) {
+          return { r: (mn * co[d1.label] / co[n1.label]) / md, kind: "mole ratio" };
+        }
+      }
+    }
+    for (const rel of ctx.relations || []) {
+      const A = rel.a.map, B = rel.b.map;
+      const sA = siOf(A), sB = siOf(B);
+      if (compat(N, A) && compat(D, B)) return { r: (sN.f / sA.f) * (rel.b.value / rel.a.value) * (sB.f / sD.f), kind: "given" };
+      if (compat(N, B) && compat(D, A)) return { r: (sN.f / sB.f) * (rel.a.value / rel.b.value) * (sA.f / sD.f), kind: "given" };
+    }
+    return null;
+  }
+  const TOL = 0.0025;
+  function checkFactor(numMap, nv, denMap, dv, ctx) {
+    const eq = equivalence(numMap, denMap, ctx);
+    if (!isFinite(nv) || !isFinite(dv) || nv === 0 || dv === 0) return { status: "empty" };
+    if (!eq) return { status: "unknown" };
+    const actual = dv / nv;
+    const ok = Math.abs(actual / eq.r - 1) < TOL;
+    return { status: ok ? "ok" : "bad", expected: nv * eq.r, kind: eq.kind };
+  }
+  function makeCtx(problem) {
+    const ctx = { relations: [], coef: null };
+    if (!problem) return ctx;
+    for (const line of problem.given || []) { const r = parseRelation(line); if (r) ctx.relations.push(r); }
+    ctx.coef = parseEquation(problem.equation);
+    return ctx;
+  }
+
+  return { parseExpr, parseQty, parseNum, parseRelation, parseEquation, molarMass, mulMap, eqMap, mapText, unitText,
+    keyOf, checkFactor, equivalence, makeCtx, fmt, toSup, siOf, lookup };
+})();
+if (typeof module !== "undefined") module.exports = UE;
+
+</script>
+<script>
+/* ===== Problem-Solving Coach: core logic (no DOM) ===== */
+const PSC = (() => {
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  // ^ for powers, _ for subscripts:  m^3  10^-22  10^{22}  H_2O  H_{2}O
+  function fmtText(s) {
+    return esc(s)
+      .replace(/\^\{([^}]*)\}/g, "<sup>$1</sup>")
+      .replace(/\^\(?([+\-−]?\d+(?:\.\d+)?)\)?/g, "<sup>$1</sup>")
+      .replace(/_\{([^}]*)\}/g, "<sub>$1</sub>")
+      .replace(/_(\d+)/g, "<sub>$1</sub>");
+  }
+
+  // Tidy unit text before it reaches the Workbench engine.
+  function normUnits(s) {
+    return String(s || "")
+      .replace(/−/g, "-")
+      .replace(/([A-Za-zμµÅ0-9)])\s*\*\s*(?=[A-Za-zμµÅ(])/g, "$1 ")   // kg*L -> kg L
+      .replace(/\(([^()]*)\)/g, (m, g) => /(^|\s)K(\s|$)/.test(g) && g.trim() !== "K" ? "(K " + g.replace(/(^|\s)K(?=\s|$)/, " ").trim() + ")" : m)   // J/(g K): kelvin, not potassium
+      .replace(/\bmol\s*[·•]?\s*K\b/g, "K mol")                       // J/(mol K) is mol·kelvin, not mol of potassium
+      .replace(/\bK\s*[·•]\s*mol\b/g, "K mol")
+      .trim();
+  }
+  const sameDims = (a, b) => a.length === b.length ? a.every((v, i) => Math.abs(v - b[i]) < 1e-9) : a.every((v, i) => Math.abs(v - (b[i] || 0)) < 1e-9);
+  const isEmptyMap = (m) => !m || Object.keys(m).length === 0;
+  const unitsText = (m) => isEmptyMap(m) ? "" : UE.mapText(m);
+  function qtyText(q, sig = 6) { const u = unitsText(q.map); return UE.fmt(q.v, sig) + (u ? " " + u : ""); }
+
+  /* ---------- quantity with units, typed by a student ---------- */
+  function parseQuantity(str) {
+    let s = String(str || "").trim().replace(/−/g, "-");
+    if (!s) return { error: "Enter a number." };
+    let pct = false;
+    if (/%\s*$/.test(s)) { pct = true; s = s.replace(/%\s*$/, "").trim(); }
+    const m = s.match(/^([+-]?(?:\d[\d,]*\.?\d*|\.\d+)(?:\s*e\s*[+-]?\d+|\s*[x×*·]\s*10\s*\^\s*\(?\s*[+-]?\d+\s*\)?|\s*[x×*·]\s*10[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)?)\s*(.*)$/i);
+    if (!m) return { error: "Start your answer with a number." };
+    let v = UE.parseNum(m[1].replace(/\s+/g, ""));
+    if (!isFinite(v)) v = UE.parseNum(m[1]);
+    if (!isFinite(v)) return { error: "That number isn't readable. Try a form like 3.70e-5 or 3.70 x 10^-5." };
+    const ustr = normUnits(m[2]);
+    if (pct) {
+      if (ustr) return { error: "Use either % or units, not both." };
+      return { v: v / 100, map: {}, pct: true };
+    }
+    const u = UE.parseExpr(ustr);
+    if (u.error) return { error: u.error };
+    return { v, map: u.map };
+  }
+
+  /* ---------- formula-line evaluator (numbers with units, + − × ÷ ^, functions) ---------- */
+  const FUNCS = { sqrt: Math.sqrt, ln: Math.log, log: Math.log10, exp: Math.exp, sin: Math.sin, cos: Math.cos, tan: Math.tan };
+  const WORD = /^[A-Za-zμµÅ][A-Za-z0-9μµÅ]*(?:\^-?\d+)?(?:\/[A-Za-zμµÅ][A-Za-z0-9μµÅ]*(?:\^-?\d+)?)*/;
+
+  function tokenize(src) {
+    const s = String(src).replace(/−/g, "-").replace(/[×·]/g, "*").replace(/÷/g, "/");
+    const toks = [];
+    let i = 0;
+    while (i < s.length) {
+      const c = s[i];
+      if (/\s/.test(c)) { i++; continue; }
+      let m;
+      if ((m = s.slice(i).match(/^(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?/))) { toks.push({ t: "num", v: parseFloat(m[0]) }); i += m[0].length; continue; }
+      if (c === "{") { const j = s.indexOf("}", i); if (j < 0) throw new Error("A { has no matching }."); toks.push({ t: "ref", v: s.slice(i + 1, j).trim() }); i = j + 1; continue; }
+      if (c === "π") { toks.push({ t: "pi" }); i++; continue; }
+      if ("+-*/^()".includes(c)) { toks.push({ t: "op", v: c }); i++; continue; }
+      if ((m = s.slice(i).match(WORD))) {
+        const w = m[0];
+        if (/^pi$/i.test(w)) toks.push({ t: "pi" });
+        else if (w === "x" || w === "X") toks.push({ t: "op", v: "*" });
+        else if (FUNCS[w.toLowerCase()] && s.slice(i + w.length).trimStart().startsWith("(")) toks.push({ t: "fn", v: w.toLowerCase() });
+        else toks.push({ t: "word", v: w });
+        i += w.length; continue;
+      }
+      throw new Error(`I don't understand “${c}”.`);
+    }
+    return toks;
+  }
+
+  const Q = (v, map = {}) => ({ v, map });
+  function qMul(a, b) { return Q(a.v * b.v, UE.mulMap(a.map, b.map)); }
+  function qDiv(a, b) { if (b.v === 0) throw new Error("Division by zero."); return Q(a.v / b.v, UE.mulMap(a.map, b.map, -1)); }
+  function qPow(a, n) {
+    if (!isEmptyMap(a.map) && !Number.isInteger(n)) throw new Error("Units can only be raised to whole-number powers.");
+    return Q(Math.pow(a.v, n), isEmptyMap(a.map) ? {} : UE.mulMap({}, a.map, n));
+  }
+  function qAdd(a, b, sign) {
+    if (isEmptyMap(a.map) && isEmptyMap(b.map)) return Q(a.v + sign * b.v);
+    const sa = UE.siOf(a.map), sb = UE.siOf(b.map);
+    if (isEmptyMap(a.map) || isEmptyMap(b.map) || !sameDims(sa.d, sb.d))
+      throw new Error(`You can't ${sign > 0 ? "add" : "subtract"} ${unitsText(b.map) || "a plain number"} ${sign > 0 ? "to" : "from"} ${unitsText(a.map) || "a plain number"}.`);
+    return Q(a.v + sign * b.v * sb.f / sa.f, a.map);
+  }
+  function unitQ(words) {
+    const u = UE.parseExpr(normUnits(words.join(" ")));
+    if (u.error) throw new Error(u.error);
+    return Q(1, u.map);
+  }
+
+  function evaluate(src, refs = {}) {
+    const toks = tokenize(src);
+    if (!toks.length) throw new Error("Type a calculation.");
+    let p = 0;
+    const peek = () => toks[p];
+    const isOp = (v) => peek() && peek().t === "op" && peek().v === v;
+    const startsPrimary = () => { const k = peek(); return k && (k.t === "num" || k.t === "word" || k.t === "ref" || k.t === "pi" || k.t === "fn" || (k.t === "op" && k.v === "(")); };
+    function words() { const w = []; while (peek() && peek().t === "word") w.push(toks[p++].v); return w; }
+    function expr() {
+      let a = term();
+      while (isOp("+") || isOp("-")) { const s = toks[p++].v === "+" ? 1 : -1; a = qAdd(a, term(), s); }
+      return a;
+    }
+    function term() {
+      let a = unary();
+      for (;;) {
+        if (isOp("*")) { p++; a = qMul(a, unary()); }
+        else if (isOp("/")) { p++; a = qDiv(a, unary()); }
+        else if (startsPrimary()) a = qMul(a, unary());
+        else return a;
+      }
+    }
+    function unary() {
+      if (isOp("-")) { p++; const a = unary(); return Q(-a.v, a.map); }
+      if (isOp("+")) { p++; return unary(); }
+      return power();
+    }
+    function exponent() {
+      let sign = 1;
+      while (isOp("-") || isOp("+")) { if (toks[p++].v === "-") sign = -sign; }
+      const k = peek();
+      if (k && k.t === "num") { p++; return sign * k.v; }
+      if (isOp("(")) { p++; const e = expr(); if (!isOp(")")) throw new Error("Missing )."); p++; if (!isEmptyMap(e.map)) throw new Error("An exponent can't have units."); return sign * e.v; }
+      throw new Error("Put a number after ^.");
+    }
+    function power() {
+      let a = primary();
+      if (isOp("^")) { p++; a = qPow(a, exponent()); }
+      return a;
+    }
+    function primary() {
+      const k = peek();
+      if (!k) throw new Error("The calculation ends too soon.");
+      if (k.t === "num") {
+        p++;
+        if (isOp("^")) return Q(k.v);                         // 10^-5 : power handled by caller
+        const w = words();
+        return w.length ? qMul(Q(k.v), unitQ(w)) : Q(k.v);
+      }
+      if (k.t === "word") return unitQ(words());
+      if (k.t === "pi") { p++; return Q(Math.PI); }
+      if (k.t === "ref") {
+        p++;
+        const r = refs[k.v.toLowerCase()];
+        if (!r) throw new Error(`There's no earlier line named “${k.v}”.`);
+        return Q(r.v, r.map);
+      }
+      if (k.t === "fn") {
+        p++;
+        if (!isOp("(")) throw new Error(`${k.v} needs parentheses.`);
+        p++; const a = expr(); if (!isOp(")")) throw new Error("Missing )."); p++;
+        if (!isEmptyMap(a.map)) throw new Error(`${k.v}( ) needs a number without units.`);
+        return Q(FUNCS[k.v](a.v));
+      }
+      if (k.t === "op" && k.v === "(") {
+        p++; const a = expr();
+        if (!isOp(")")) throw new Error("Missing ).");
+        p++; return a;
+      }
+      throw new Error(`Unexpected “${k.v}”.`);
+    }
+    const out = expr();
+    if (p < toks.length) throw new Error(`Unexpected “${toks[p].v ?? toks[p].t}”.`);
+    if (!isFinite(out.v)) throw new Error("The result isn't a finite number.");
+    return simplify(out);
+  }
+
+  // A result whose units cancel physically (m^3/L, mol/mol) becomes a plain number.
+  function simplify(q) {
+    if (isEmptyMap(q.map)) return q;
+    const s = UE.siOf(q.map);
+    return s.d.every(x => Math.abs(x) < 1e-9) ? Q(q.v * s.f) : q;
+  }
+
+  function convertTo(q, unitStr) {
+    const u = UE.parseExpr(normUnits(unitStr));
+    if (u.error) throw new Error(u.error);
+    const a = UE.siOf(q.map), b = UE.siOf(u.map);
+    if (!sameDims(a.d, b.d)) throw new Error(`${unitsText(q.map) || "A plain number"} can't be shown in ${unitStr}.`);
+    return Q(q.v * a.f / b.f, u.map);
+  }
+
+  /* ---------- tolerance and grading ---------- */
+  function parseTolerance(t) {
+    const s = String(t ?? "").trim();
+    if (!s) return { kind: "pct", x: 5 };
+    let m = s.match(/^(\d+(?:\.\d+)?)\s*%$/);
+    if (m) return { kind: "pct", x: +m[1] };
+    m = s.match(/^abs\s*:\s*(.+)$/i);
+    if (m) { const x = UE.parseNum(m[1]); if (isFinite(x) && x >= 0) return { kind: "abs", x }; }
+    return null;
+  }
+  function tolText(t) { const p = parseTolerance(t); return !p ? "?" : p.kind === "pct" ? `within ${p.x}%` : `within ±${p.x}`; }
+
+  // part: {value, units, tolerance, alt_answers:[]}
+  function grade(part, input) {
+    const s = parseQuantity(input);
+    if (s.error) {
+      const unitless = !part.units && (part.alt_answers || []).every(a => { const q = parseQuantity(a); return q.error || isEmptyMap(q.map); });
+      if (unitless && /isn't a unit/.test(s.error)) return { ok: false, msg: "This answer has no units. Enter just the number." };
+      return { ok: false, msg: s.error };
+    }
+    const tol = parseTolerance(part.tolerance) || { kind: "pct", x: 5 };
+    const keys = [{ value: part.value, units: part.units || "" }, ...(part.alt_answers || []).map(a => {
+      const q = parseQuantity(a); return q.error ? null : { value: q.v, units: unitsText(q.map), map: q.map };
+    }).filter(Boolean)];
+    let unitIssue = null, numberIssue = false;
+    for (const k of keys) {
+      const kmap = k.map || (k.units ? UE.parseExpr(normUnits(k.units)).map : {});
+      const kNeedsUnits = !isEmptyMap(kmap);
+      if (kNeedsUnits && isEmptyMap(s.map)) { unitIssue = unitIssue || "missing"; continue; }
+      if (!kNeedsUnits && !isEmptyMap(s.map)) { unitIssue = unitIssue || "extra"; continue; }
+      let sv = s.v, kv = +k.value;
+      if (kNeedsUnits) {
+        const a = UE.siOf(s.map), b = UE.siOf(kmap);
+        if (!sameDims(a.d, b.d)) { unitIssue = unitIssue || "wrong"; continue; }
+        sv = s.v * a.f / b.f;          // student's answer expressed in the key's units
+      }
+      const ok = tol.kind === "pct"
+        ? (kv === 0 ? Math.abs(sv) <= 1e-12 : Math.abs(sv - kv) / Math.abs(kv) <= tol.x / 100 + 1e-12)
+        : Math.abs(sv - kv) <= tol.x + 1e-15;
+      if (ok) return { ok: true, msg: "Correct!" };
+      numberIssue = true;
+    }
+    if (numberIssue) return { ok: false, msg: "Your units work, but the number isn't close enough to the answer. Check your calculation." };
+    if (unitIssue === "missing") return { ok: false, msg: "This answer needs units." };
+    if (unitIssue === "extra") return { ok: false, msg: "This answer has no units. Enter just the number." };
+    return { ok: false, msg: "Those units don't match what the question asks for." };
+  }
+
+  /* ---------- spreadsheet → problems ---------- */
+  const COLS = ["problem_id", "topic", "chapter", "problem_text", "part", "part_prompt", "answer_type", "answer_value",
+    "answer_units", "tolerance", "alt_answers", "hint", "model_solution", "background_image"];
+  const REQUIRED_COLS = ["problem_id", "topic", "problem_text", "part", "part_prompt", "answer_type", "answer_value", "answer_units", "hint", "model_solution"];
+
+  function parseDelimited(text) {
+    const delim = (text.split(/\r?\n/)[0] || "").includes("\t") ? "\t" : ",";
+    const rows = []; let row = [], cell = "", q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+        else cell += c;
+      } else if (c === '"' && cell === "") q = true;
+      else if (c === delim) { row.push(cell); cell = ""; }
+      else if (c === "\n" || c === "\r") {
+        if (c === "\r" && text[i + 1] === "\n") i++;
+        row.push(cell); rows.push(row); row = []; cell = "";
+      } else cell += c;
+    }
+    if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
+    return rows.filter(r => r.some(c => String(c).trim()));
+  }
+
+  function rowsToProblems(rows) {
+    const errors = [], warnings = [];
+    if (!rows.length) return { errors: [{ row: 0, msg: "The file is empty." }], warnings, problems: [] };
+    const head = rows[0].map(h => String(h).trim().toLowerCase().replace(/\s+/g, "_"));
+    const idx = {};
+    COLS.forEach(c => idx[c] = head.indexOf(c));
+    const missing = REQUIRED_COLS.filter(c => idx[c] < 0);
+    if (missing.length) return { errors: [{ row: 1, msg: `Missing column(s): ${missing.join(", ")}. Start from the template.` }], warnings, problems: [] };
+    const get = (r, c) => idx[c] < 0 ? "" : String(r[idx[c]] ?? "").trim();
+    const byId = new Map();
+    for (let i = 1; i < rows.length; i++) {
+      const r = rows[i], n = i + 1, err = (m) => errors.push({ row: n, msg: m });
+      const id = get(r, "problem_id");
+      if (!id) { err("problem_id is blank."); continue; }
+      let P = byId.get(id);
+      if (!P) {
+        P = { id, topic: get(r, "topic"), chapter: get(r, "chapter"), text: get(r, "problem_text"), background_image: get(r, "background_image"), parts: [] };
+        byId.set(id, P);
+        if (!P.topic) err(`${id}: topic is blank on the problem's first row.`);
+        if (!P.text) err(`${id}: problem_text is blank on the problem's first row.`);
+      }
+      const part = get(r, "part").toLowerCase();
+      if (!part) err(`${id}: part is blank.`);
+      else if (P.parts.some(x => x.part === part)) err(`${id}: part “${part}” appears twice.`);
+      const type = get(r, "answer_type").toLowerCase();
+      const prompt = get(r, "part_prompt");
+      if (!prompt) err(`${id} part ${part}: part_prompt is blank.`);
+      if (type !== "numeric" && type !== "ungraded") { err(`${id} part ${part}: answer_type must be “numeric” or “ungraded”.`); continue; }
+      const p = { part, prompt, type };
+      if (type === "numeric") {
+        const v = UE.parseNum(get(r, "answer_value"));
+        if (!isFinite(v)) err(`${id} part ${part}: answer_value “${get(r, "answer_value")}” isn't a number.`);
+        const units = get(r, "answer_units");
+        if (units) { const u = UE.parseExpr(normUnits(units)); if (u.error) err(`${id} part ${part}: answer_units — ${u.error}`); }
+        const tol = get(r, "tolerance") || "5%";
+        if (!parseTolerance(tol)) err(`${id} part ${part}: tolerance “${tol}” should look like 5% or abs:0.001.`);
+        const alts = get(r, "alt_answers").split(";").map(s => s.trim()).filter(Boolean);
+        for (const a of alts) {
+          const q = parseQuantity(a);
+          if (q.error) err(`${id} part ${part}: alt answer “${a}” — ${q.error}`);
+          else if (units && isEmptyMap(q.map)) err(`${id} part ${part}: alt answer “${a}” needs units like the main answer.`);
+        }
+        const hint = get(r, "hint"), sol = get(r, "model_solution");
+        if (!hint) err(`${id} part ${part}: hint is blank (shown after 2 failed attempts).`);
+        if (!sol) err(`${id} part ${part}: model_solution is blank (shown after 5 failed attempts or a correct answer).`);
+        Object.assign(p, { value: v, units, tolerance: tol, alt_answers: alts, hint, model_solution: sol });
+      } else {
+        const sol = get(r, "model_solution");
+        if (sol) p.model_solution = sol;
+      }
+      P.parts.push(p);
+    }
+    const problems = [...byId.values()];
+    problems.forEach(P => { if (!P.parts.length) errors.push({ row: 0, msg: `${P.id}: has no usable parts.` }); });
+    return { errors, warnings, problems };
+  }
+
+  function problemsToRows(problems) {
+    const rows = [COLS];
+    for (const P of problems) P.parts.forEach((p, i) => rows.push([
+      P.id, i ? "" : P.topic, i ? "" : (P.chapter || ""), i ? "" : P.text, p.part, p.prompt, p.type,
+      p.type === "numeric" ? String(p.value) : "", p.units || "", p.type === "numeric" ? (p.tolerance || "5%") : "",
+      (p.alt_answers || []).join("; "), p.hint || "", p.model_solution || "", i ? "" : (P.background_image || "")]));
+    return rows;
+  }
+
+  function toJSON(problems) {
+    return JSON.stringify({ format: "problem-solving-coach", version: 1, problems }, null, 2);
+  }
+  function fromJSON(text) {
+    const o = JSON.parse(text);
+    const list = Array.isArray(o) ? o : o.problems;
+    if (!Array.isArray(list)) throw new Error("No problems list found in that file.");
+    return list;
+  }
+
+  return { esc, fmtText, normUnits, parseQuantity, evaluate, convertTo, qtyText, unitsText, isEmptyMap, sameDims,
+    parseTolerance, tolText, grade, parseDelimited, rowsToProblems, problemsToRows, toJSON, fromJSON, COLS, REQUIRED_COLS };
+})();
+if (typeof module !== "undefined") module.exports = PSC;
+
+/* ===== Starter problems (from the "Solving Chemistry Problems" slides, corrected) ===== */
+const BUILTIN_PROBLEMS = [
+  {
+    id: "DENS-001", topic: "Density", chapter: "1",
+    text: "A graduated cylinder is found to weigh 88.32 g. When 50 mL of water is added, the cylinder and water weigh 137.29 g. Next, 50 mL of antifreeze is added, and the cylinder and its contents now weigh 192.79 g. The cylinder is now found to contain 91.1 mL of liquid. What is the density in g/mL of the cylinder's contents? (Volumes of liquids mixed together are not always additive.)",
+    parts: [{
+      part: "a", prompt: "What is the density of the cylinder's contents?", type: "numeric", value: 1.147, units: "g/mL", tolerance: "5%", alt_answers: [],
+      hint: "The mass of the contents is the total mass minus the empty cylinder. The volume is what you read on the cylinder (91.1 mL), not 50 mL + 50 mL.",
+      model_solution: "Plan: find the mass of the contents, find their volume, then divide.\nLiquid mass = 192.79 g − 88.32 g = 104.47 g\nVolume of contents = 91.1 mL (read from the cylinder; mixed volumes are not additive)\nDensity = 104.47 g / 91.1 mL = 1.147 g/mL\nThe 137.29 g reading is not needed."
+    }]
+  },
+  {
+    id: "ROD-001", topic: "Density", chapter: "1",
+    text: "A bundle of cylindrical steel rods weighs 1850 kg. Each rod is 6.1 m long with a diameter of 25.4 mm. How many rods are in the bundle? The volume of a cylinder is πr^2h, where r is the radius and h is the height. The density of steel is 7930 kg/m^3.",
+    parts: [{
+      part: "a", prompt: "How many rods are in the bundle?", type: "numeric", value: 75.5, units: "", tolerance: "5%", alt_answers: ["75", "76"],
+      hint: "Find the mass of ONE rod first: radius from the diameter (convert mm to m), then volume, then mass from the density. Then: number of rods × mass per rod = bundle mass.",
+      model_solution: "r = 25.4 mm / 2 = 12.7 mm = 0.0127 m\nV = π(0.0127 m)^2(6.1 m) = 3.091 × 10^-3 m^3\nMass of one rod = 3.091 × 10^-3 m^3 × 7930 kg/m^3 = 24.51 kg\nNumber of rods = 1850 kg / 24.51 kg = 75.5, so about 75–76 rods."
+    }]
+  },
+  {
+    id: "NEON-001", topic: "Atoms & gases", chapter: "2",
+    text: "A 1 L sample of gaseous neon contains 2.69 x 10^22 atoms per liter. The atomic radius of neon is 69 pm. The volume of a sphere is V = (4/3)πR^3, where R is the radius.",
+    parts: [
+      { part: "a", prompt: "What fraction of the total volume do the atoms themselves occupy?", type: "numeric", value: 3.70e-5, units: "", tolerance: "5%", alt_answers: [],
+        hint: "Volume of one atom × number of atoms, divided by the 1 L total. Watch the units: pm → m → m^3 → L (1 m^3 = 1000 L).",
+        model_solution: "V(one atom) = (4/3)π(69 × 10^-12 m)^3 = 1.376 × 10^-30 m^3 = 1.376 × 10^-27 L\nVolume of all atoms = 2.69 × 10^22 × 1.376 × 10^-27 L = 3.70 × 10^-5 L\nFraction occupied = 3.70 × 10^-5 L / 1 L = 3.70 × 10^-5" },
+      { part: "b", prompt: "What fraction of the total volume is empty space?", type: "numeric", value: 0.99996, units: "", tolerance: "abs:0.00001", alt_answers: [],
+        hint: "Empty fraction = 1 − occupied fraction.",
+        model_solution: "Empty fraction = 1 − 3.70 × 10^-5 = 0.99996 (about 99.996% empty)" },
+      { part: "c", prompt: "What does this tell you about the separation between atoms in the gas phase?", type: "ungraded",
+        model_solution: "Almost all of a gas is empty space: the atoms are very far apart compared with their own size." }
+    ]
+  }
+];
+
+</script>
+<script>
+/* ===== Problem-Solving Coach: page ===== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const { esc, fmtText } = PSC;
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { } },
+  del(k) { try { localStorage.removeItem(k); } catch { } }
+};
+function toast(msg, ms = 2600) {
+  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), ms);
+}
+const wordCount = (s) => (String(s || "").trim().match(/\S+/g) || []).length;
+const MIN_WORDS = 3;
+
+/* ---------- downloads (artifact capability, or a normal browser download) ---------- */
+let downloads = null;
+(async () => { try { if (window.claude && window.claude.use) downloads = await window.claude.use("downloads"); } catch { } })();
+async function saveFile(name, data, mime) {
+  if (downloads) {
+    try { await downloads.save({ filename: name, data }); return true; }
+    catch (e) { if (e && e.code === "declined") return false; }
+  }
+  try {
+    const blob = data instanceof Blob ? data : new Blob([data], { type: mime });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 8000);
+    return true;
+  } catch { toast("This view can't download files."); return false; }
+}
+function loadScript(src, globalName) {
+  if (window[globalName]) return Promise.resolve(window[globalName]);
+  loadScript.p = loadScript.p || {};
+  if (loadScript.p[src]) return loadScript.p[src];
+  return (loadScript.p[src] = new Promise((res, rej) => {
+    const s = document.createElement("script"); s.src = src;
+    s.onload = () => res(window[globalName]); s.onerror = () => { loadScript.p[src] = null; rej(new Error("load")); };
+    document.head.appendChild(s);
+  }));
+}
+const SHEETJS = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+const JSPDF = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+
+/* ---------- problems and saved work ---------- */
+let uploaded = LS.get("psc:uploaded", []);
+let siteProblems = null;   // from problems.json next to the page (on GitHub); null = use the built-in starter problems
+function allProblems() {
+  const ids = new Set(uploaded.map(p => p.id));
+  return [...(siteProblems || BUILTIN_PROBLEMS).filter(p => !ids.has(p.id)), ...uploaded];
+}
+let P = null, S = null;
+const blankState = () => ({ ready: false, conf: 0, hl: {}, s3: "", s5: "", s6: "", s7: "", draw: [], lines: [], parts: {} });
+let saveTimer;
+function save() { clearTimeout(saveTimer); saveTimer = setTimeout(() => LS.set("psc:work:" + P.id, S), 250); }
+
+function fillPicker(selectId) {
+  const sel = $("#pick"), ps = allProblems();
+  const topics = [...new Set(ps.map(p => p.topic || "Other"))];
+  sel.innerHTML = topics.map(t => `<optgroup label="${esc(t)}">` + ps.filter(p => (p.topic || "Other") === t).map(p => {
+    const short = p.text.replace(/\s+/g, " ").slice(0, 60) + (p.text.length > 60 ? "…" : "");
+    return `<option value="${esc(p.id)}">${esc(p.id)}: ${esc(short.replace(/[\^_]\{?/g, "").replace(/\}/g, ""))}</option>`;
+  }).join("") + "</optgroup>").join("");
+  const want = selectId || LS.get("psc:last", null);
+  if (want && ps.some(p => p.id === want)) sel.value = want;
+  openProblem(sel.value);
+}
+function openProblem(id) {
+  P = allProblems().find(p => p.id === id) || allProblems()[0];
+  S = Object.assign(blankState(), LS.get("psc:work:" + P.id, {}));
+  LS.set("psc:last", P.id);
+  undoStack = []; fillSel = new Set();
+  renderProblem(); renderSteps(); updateGates();
+}
+
+/* ---------- problem text + highlighter (Step 2) ---------- */
+let pen = "blue", painting = null;
+function renderProblem() {
+  let wi = 0;
+  const html = P.text.split(/(\s+)/).map(t => /^\s+$/.test(t) || !t ? " " : `<span class="w" data-i="${wi++}">${fmtText(t)}</span>`).join("");
+  $("#prob").innerHTML = `
+    <h2>The problem <span class="spacer"></span><button class="btn small" id="pin" title="Keep the problem on screen while you scroll">Pin</button></h2>
+    <p class="ptext" id="ptext">${html}</p>
+    <div class="hltools">
+      <span class="note">Step 2 highlighter:</span>
+      <button class="btn small pen-blue" data-pen="blue">Blue: what's asked</button>
+      <button class="btn small pen-orange" data-pen="orange">Orange: what's given</button>
+      <button class="btn small" data-pen="erase">Eraser</button>
+      <button class="btn small" id="hl-clear">Clear highlights</button>
+    </div>`;
+  paintHighlights(); setPen(pen);
+  $("#pin").onclick = () => { $("#prob").classList.toggle("pinned"); $("#pin").classList.toggle("on"); };
+  $$("[data-pen]", $("#prob")).forEach(b => b.onclick = () => setPen(b.dataset.pen));
+  $("#hl-clear").onclick = () => { S.hl = {}; paintHighlights(); changed(); };
+  const pt = $("#ptext");
+  pt.addEventListener("pointerdown", (e) => {
+    const w = e.target.closest(".w"); if (!w) return;
+    const i = w.dataset.i;
+    painting = pen === "erase" ? "erase" : (S.hl[i] === pen ? "erase" : pen);
+    applyHl(i); e.preventDefault();
+  });
+  pt.addEventListener("pointermove", (e) => {
+    if (!painting) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const w = el && el.closest && el.closest(".w"); if (w && pt.contains(w)) applyHl(w.dataset.i);
+  });
+  const stop = () => { if (painting) { painting = null; changed(); } };
+  window.addEventListener("pointerup", stop); pt.addEventListener("pointercancel", stop);
+}
+function setPen(p) { pen = p; $$("[data-pen]", $("#prob")).forEach(b => b.classList.toggle("on", b.dataset.pen === p)); }
+function applyHl(i) {
+  if (painting === "erase") delete S.hl[i]; else S.hl[i] = painting;
+  const w = $(`.w[data-i="${i}"]`, $("#prob"));
+  w.classList.toggle("hb", S.hl[i] === "blue"); w.classList.toggle("ho", S.hl[i] === "orange");
+}
+function paintHighlights() {
+  $$(".w", $("#prob")).forEach(w => { const c = S.hl[w.dataset.i]; w.classList.toggle("hb", c === "blue"); w.classList.toggle("ho", c === "orange"); });
+}
+function hlWords(color) {
+  const words = P.text.split(/\s+/).filter(Boolean);
+  const out = []; let run = [];
+  words.forEach((w, i) => { if (S.hl[i] === color) run.push(w); else if (run.length) { out.push(run.join(" ")); run = []; } });
+  if (run.length) out.push(run.join(" "));
+  return out;
+}
+
+/* ---------- steps ---------- */
+const STEPS = [
+  { n: 1, title: "Tell yourself that you can do this. Relax." },
+  { n: 2, title: "Read through the problem several times, slowly." },
+  { n: 3, title: "Write in English what the answer should look like, including units." },
+  { n: 4, title: "Draw a picture to clarify the problem." },
+  { n: 5, title: "Write down in English the information that you have. Label the picture with it." },
+  { n: 6, title: "Write down in English the relationships between the key factors." },
+  { n: 7, title: "Write down in English a plan for solving the problem. Write out each step." },
+  { n: 8, title: "Put in numbers and solve." }
+];
+const PLACEHOLDER = {
+  s3: "The desired result is …  (say what quantity, and what units it will have)",
+  s5: "One fact per line, for example:\nThe empty cylinder weighs 88.32 g\nThe cylinder holds 91.1 mL of liquid\nDensity is mass / volume",
+  s6: "For example:\nDensity = mass / volume\nLiquid mass = total mass − cylinder mass",
+  s7: "A. Determine …\nB. Determine …\nC. Calculate …\nD. Convert units if needed"
+};
+function stepDone() {
+  const d = {};
+  d[1] = !!S.ready;
+  d[2] = Object.values(S.hl).includes("blue") && Object.values(S.hl).includes("orange");
+  d[3] = wordCount(S.s3) >= MIN_WORDS;
+  d[4] = S.draw.length > 0;
+  d[5] = wordCount(S.s5) >= MIN_WORDS;
+  d[6] = wordCount(S.s6) >= MIN_WORDS;
+  d[7] = wordCount(S.s7) >= MIN_WORDS;
+  d[8] = P.parts.filter(p => p.type === "numeric").every(p => (S.parts[p.part] || {}).correct);
+  return d;
+}
+const MISSING = {
+  2: "Step 2: highlight what's asked (blue) and what's given (orange)",
+  3: "Step 3: describe the answer in a few words",
+  4: "Step 4: draw a picture",
+  5: "Step 5: list what you know",
+  6: "Step 6: write the key relationships",
+  7: "Step 7: write a plan"
+};
+
+function stepCard(st, body) {
+  return `<div class="card step" id="step${st.n}"><div class="num">${st.n}</div><div><h3>${esc(st.title)}</h3>${body}</div></div>`;
+}
+function renderSteps() {
+  const ta = (k, rows = 4) => `<textarea data-k="${k}" rows="${rows}" placeholder="${esc(PLACEHOLDER[k])}">${esc(S[k])}</textarea><div class="status" data-st="${k}"></div>`;
+  $("#steps").innerHTML = [
+    stepCard(STEPS[0], `<p class="why">Take a breath. You have a method, and it works.</p>
+      <button class="btn" id="ready">I can do this.</button>
+      <div class="conf"><span class="note">How confident do you feel about this problem?</span>
+      ${[1, 2, 3, 4, 5].map(i => `<button class="btn small" data-conf="${i}">${i}</button>`).join("")}<span class="note">(1 = not at all, 5 = very)</span></div>`),
+    stepCard(STEPS[1], `<ul class="tips"><li>What is the desired answer? What units should go with it?</li>
+      <li>If the units in your answer are correct, the number is likely correct.</li><li><b>Don't start solving yet!</b></li></ul>
+      <p class="why">Use the highlighter on the problem above: <b>blue</b> for what the question asks for, <b>orange</b> for the information you're given. Leave anything you don't need unhighlighted.</p>
+      <div class="status" id="st2"></div>`),
+    stepCard(STEPS[2], ta("s3", 2)),
+    stepCard(STEPS[3], padHTML()),
+    stepCard(STEPS[4], `<p class="why">One fact per line. Each line becomes a label you can drag onto your drawing in Step 4.</p>${ta("s5", 5)}`),
+    stepCard(STEPS[5], ta("s6", 3)),
+    stepCard(STEPS[6], ta("s7", 5)),
+    stepCard(STEPS[7], `<div class="lock" id="lock"></div><div id="solve8" hidden></div>`)
+  ].join("");
+  $("#ready").onclick = () => { S.ready = !S.ready; changed(); };
+  $$("[data-conf]").forEach(b => b.onclick = () => { S.conf = +b.dataset.conf; changed(); });
+  $$("textarea[data-k]", $("#steps")).forEach(t => t.addEventListener("input", () => {
+    S[t.dataset.k] = t.value; if (t.dataset.k === "s5") renderChips(); changed();
+  }));
+  initPad(); renderChips(); renderSolve();
+}
+function changed() { save(); updateGates(); }
+
+function updateGates() {
+  const d = stepDone();
+  STEPS.forEach(st => { const el = $("#step" + st.n); el && el.classList.toggle("done", !!d[st.n]); });
+  $("#ready").classList.toggle("on", !!S.ready);
+  $("#ready").textContent = S.ready ? "I can do this. ✓" : "I can do this.";
+  $$("[data-conf]").forEach(b => b.classList.toggle("on", +b.dataset.conf === S.conf));
+  const blue = hlWords("blue").length, orange = hlWords("orange").length;
+  const st2 = $("#st2");
+  st2.textContent = d[2] ? "Done. You've marked what's asked and what's given." : `So far: ${blue ? "✓" : "✗"} blue (what's asked) · ${orange ? "✓" : "✗"} orange (what's given)`;
+  st2.classList.toggle("ok", d[2]);
+  for (const k of ["s3", "s5", "s6", "s7"]) {
+    const el = $(`[data-st="${k}"]`); const n = +k.slice(1);
+    el.textContent = d[n] ? "Done." : `Write at least ${MIN_WORDS} words.`;
+    el.classList.toggle("ok", d[n]);
+  }
+  const missing = [2, 3, 4, 5, 6, 7].filter(n => !d[n]);
+  const lock = $("#lock"), body = $("#solve8");
+  if (missing.length) {
+    lock.hidden = false; body.hidden = true;
+    lock.innerHTML = `<b>Step 8 unlocks when Steps 2–7 are done.</b>Don't start solving yet! Still to do:<ul>${missing.map(n => `<li><a href="#step${n}" data-jump="${n}">${esc(MISSING[n])}</a></li>`).join("")}</ul>`;
+    $$("[data-jump]", lock).forEach(a => a.onclick = (e) => { e.preventDefault(); $("#step" + a.dataset.jump).scrollIntoView({ behavior: "smooth", block: "center" }); });
+  } else { lock.hidden = true; body.hidden = false; }
+}
+
+/* ---------- drawing pad (Step 4) ---------- */
+const CW = 960, CH = 440, SCALE = 2;
+const COLORS = ["#1D2730", "#2E78D6", "#D9771E", "#C2382A", "#2B7A4B", "#D3D3D3", "#9B9B9B", "#5F5F5F"];
+const PATTERNS = [["solid", "Solid"], ["diag", "Diagonal lines"], ["cross", "Crosshatch"], ["dots", "Dots"], ["horiz", "Horizontal lines"], ["vert", "Vertical lines"], ["brick", "Bricks"]];
+let fillPat = "solid", fillSel = new Set();
+let tool = "pen", color = COLORS[0], thick = 3, undoStack = [], cur = null, drag = null, bgImg = null;
+function padHTML() {
+  const tools = [["pen", "Pen"], ["line", "Line"], ["arrow", "Arrow"], ["rect", "Box"], ["oval", "Oval"], ["text", "Text"], ["fill", "Fill"], ["move", "Move"], ["erase", "Erase"]];
+  return `<div class="padtools">
+    ${tools.map(([k, l]) => `<button class="btn small" data-tool="${k}">${l}</button>`).join("")}
+    <span class="sep"></span>
+    ${COLORS.map(c => `<button class="swatch" data-color="${c}" style="background:${c}" aria-label="color ${c}"></button>`).join("")}
+    <span class="sep"></span>
+    <button class="btn small" data-thick="2">Thin</button><button class="btn small" data-thick="5">Thick</button>
+    <span class="sep"></span>
+    <button class="btn small" id="undo">Undo</button><button class="btn small" id="clear">Clear</button>
+  </div>
+  <div class="fillrow" id="fillrow" hidden>
+    <span class="note"><b>Fill:</b> click the line(s) around an area, then click a color or a pattern.</span>
+    <span class="pats">${PATTERNS.map(([k, l]) => `<button class="patbtn" data-pat="${k}" title="${l}" aria-label="${l}"><canvas width="44" height="26"></canvas></button>`).join("")}</span>
+  </div>
+  <div class="padwrap" id="padwrap"><canvas id="pad" width="${CW * SCALE}" height="${CH * SCALE}"></canvas></div>
+  <div class="chips" id="chips"></div>`;
+}
+function initPad() {
+  const cv = $("#pad"), ctx = cv.getContext("2d");
+  ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
+  bgImg = null;
+  if (P.background_image) {
+    const im = new Image(); im.onload = () => { bgImg = im; redraw(); }; im.src = P.background_image;
+  }
+  const syncTools = () => {
+    $$("[data-tool]").forEach(b => b.classList.toggle("on", b.dataset.tool === tool));
+    $$("[data-color]").forEach(b => b.classList.toggle("on", b.dataset.color === color));
+    $$("[data-thick]").forEach(b => b.classList.toggle("on", +b.dataset.thick === thick));
+    $$("[data-pat]").forEach(b => b.classList.toggle("on", b.dataset.pat === fillPat));
+    $("#fillrow").hidden = tool !== "fill";
+    cv.style.cursor = tool === "move" ? "move" : tool === "text" ? "text" : tool === "erase" ? "not-allowed" : tool === "fill" ? "pointer" : "crosshair";
+    drawPatternSwatches();
+  };
+  $$("[data-tool]").forEach(b => b.onclick = () => { tool = b.dataset.tool; if (tool !== "fill" && fillSel.size) { fillSel.clear(); redraw(); } syncTools(); });
+  $$("[data-color]").forEach(b => b.onclick = () => {
+    color = b.dataset.color; syncTools();
+    if (tool === "fill") fillSelected();
+  });
+  $$("[data-pat]").forEach(b => b.onclick = () => { fillPat = b.dataset.pat; syncTools(); if (fillSel.size) fillSelected(); else toast("Now click the line(s) around the area you want to fill."); });
+  $$("[data-thick]").forEach(b => b.onclick = () => { thick = +b.dataset.thick; syncTools(); });
+  $("#undo").onclick = () => { if (undoStack.length) { S.draw = JSON.parse(undoStack.pop()); redraw(); changed(); } };
+  $("#clear").onclick = () => { if (S.draw.length) { snap(); S.draw = []; redraw(); changed(); } };
+  syncTools();
+
+  cv.addEventListener("pointerdown", (e) => {
+    if (e.button > 0) return;
+    const p = pt(e); cv.setPointerCapture(e.pointerId);
+    if (tool === "text") { e.preventDefault(); openTextInput(p); return; }
+    if (tool === "fill") {
+      const o = hit(p, true);
+      if (o) { fillSel.has(o) ? fillSel.delete(o) : fillSel.add(o); redraw(); }
+      else toast("Click right on a line. Select every line around the area, then pick a color or pattern.");
+      return;
+    }
+    if (tool === "move") { const o = hit(p); if (o) { snap(); drag = { o, p }; } return; }
+    if (tool === "erase") { snap(); drag = { erase: true, any: false }; eraseAt(p); return; }
+    snap();
+    cur = tool === "pen" ? { t: "path", c: color, w: thick, pts: [[p.x, p.y]] } : { t: tool, c: color, w: thick, x1: p.x, y1: p.y, x2: p.x, y2: p.y };
+    S.draw.push(cur); redraw();
+  });
+  cv.addEventListener("pointermove", (e) => {
+    if (!cur && !drag) return;
+    const p = pt(e);
+    if (cur) {
+      if (cur.t === "path") { const l = cur.pts[cur.pts.length - 1]; if (Math.hypot(p.x - l[0], p.y - l[1]) > 1.2) cur.pts.push([p.x, p.y]); }
+      else { cur.x2 = p.x; cur.y2 = p.y; }
+      redraw();
+    } else if (drag && drag.o) { move(drag.o, p.x - drag.p.x, p.y - drag.p.y); drag.p = p; redraw(); }
+    else if (drag && drag.erase) eraseAt(p);
+  });
+  const end = () => {
+    if (cur) {
+      const tiny = cur.t === "path" ? false : Math.hypot(cur.x2 - cur.x1, cur.y2 - cur.y1) < 4;
+      if (tiny) { S.draw.pop(); undoStack.pop(); }
+      cur = null; redraw(); changed();
+    } else if (drag) {
+      if (drag.erase && !drag.any) undoStack.pop();
+      drag = null; changed();
+    }
+  };
+  cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+  redraw();
+}
+function pt(e) { const r = $("#pad").getBoundingClientRect(); return { x: (e.clientX - r.left) * CW / r.width, y: (e.clientY - r.top) * CH / r.height }; }
+function snap() { undoStack.push(JSON.stringify(S.draw)); if (undoStack.length > 60) undoStack.shift(); }
+function eraseAt(p) { const o = hit(p); if (o) { S.draw.splice(S.draw.indexOf(o), 1); drag.any = true; redraw(); } }
+function move(o, dx, dy) {
+  if (o.pts) o.pts.forEach(q => { q[0] += dx; q[1] += dy; });
+  if ("x1" in o) { o.x1 += dx; o.x2 += dx; o.y1 += dy; o.y2 += dy; }
+  if (o.t === "text" || o.t === "fill") { o.x += dx; o.y += dy; }
+}
+const FONT = (o) => `${o.box ? 600 : 400} ${o.box ? 16 : 19}px "Segoe UI", system-ui, sans-serif`;
+function textBox(ctx, o) { ctx.font = FONT(o); const w = ctx.measureText(o.s).width; const pad = o.box ? 7 : 2; return { x: o.x - pad, y: o.y - 13 - (o.box ? 2 : 0), w: w + 2 * pad, h: 26 + (o.box ? 4 : 0) }; }
+function segDist(p, a, b) {
+  const dx = b[0] - a[0], dy = b[1] - a[1], L = dx * dx + dy * dy;
+  let t = L ? ((p.x - a[0]) * dx + (p.y - a[1]) * dy) / L : 0; t = Math.max(0, Math.min(1, t));
+  return Math.hypot(p.x - (a[0] + t * dx), p.y - (a[1] + t * dy));
+}
+function hit(p, strokesOnly) {
+  const ctx = $("#pad").getContext("2d");
+  for (let i = S.draw.length - 1; i >= 0; i--) {
+    const o = S.draw[i], tolr = 8 + (o.w || 0);
+    if (o.t === "fill" || (strokesOnly && o.t === "text")) continue;
+    if (o.t === "text") { const b = textBox(ctx, o); if (p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h) return o; }
+    else if (o.t === "path") { for (let j = 0; j < o.pts.length; j++) if (segDist(p, o.pts[j], o.pts[Math.min(j + 1, o.pts.length - 1)]) < tolr) return o; }
+    else if (o.t === "line" || o.t === "arrow") { if (segDist(p, [o.x1, o.y1], [o.x2, o.y2]) < tolr) return o; }
+    else if (o.t === "rect") { const x = Math.min(o.x1, o.x2), y = Math.min(o.y1, o.y2), w = Math.abs(o.x2 - o.x1), h = Math.abs(o.y2 - o.y1); if (p.x >= x - tolr && p.x <= x + w + tolr && p.y >= y - tolr && p.y <= y + h + tolr) return o; }
+    else if (o.t === "oval") { const cx = (o.x1 + o.x2) / 2, cy = (o.y1 + o.y2) / 2, rx = Math.abs(o.x2 - o.x1) / 2 + tolr, ry = Math.abs(o.y2 - o.y1) / 2 + tolr; if (((p.x - cx) / rx) ** 2 + ((p.y - cy) / ry) ** 2 <= 1) return o; }
+  }
+  if (!strokesOnly) for (let i = S.draw.length - 1; i >= 0; i--) { const o = S.draw[i]; if (o.t === "fill" && fillHit(o, p)) return o; }
+  return null;
+}
+function drawAll(ctx, objs, sel) {
+  ctx.save();
+  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, CW, CH);
+  if (bgImg) { const k = Math.min(CW / bgImg.width, CH / bgImg.height); ctx.drawImage(bgImg, (CW - bgImg.width * k) / 2, (CH - bgImg.height * k) / 2, bgImg.width * k, bgImg.height * k); }
+  ctx.lineCap = "round"; ctx.lineJoin = "round";
+  for (const o of objs) if (o.t === "fill") drawFill(ctx, o);
+  if (sel && sel.size) {
+    ctx.save(); ctx.globalAlpha = 0.45; ctx.strokeStyle = "#00B3FF";
+    for (const o of objs) if (sel.has(o)) { traceStroke(ctx, o, (o.w || 3) + 10); }
+    ctx.restore();
+  }
+  for (const o of objs) {
+    if (o.t === "fill") continue;
+    ctx.strokeStyle = o.c; ctx.fillStyle = o.c; ctx.lineWidth = o.w || 3;
+    if (o.t === "path") {
+      ctx.beginPath(); ctx.moveTo(o.pts[0][0], o.pts[0][1]);
+      if (o.pts.length === 1) ctx.lineTo(o.pts[0][0] + 0.1, o.pts[0][1]);
+      for (const q of o.pts) ctx.lineTo(q[0], q[1]); ctx.stroke();
+    } else if (o.t === "line" || o.t === "arrow") {
+      ctx.beginPath(); ctx.moveTo(o.x1, o.y1); ctx.lineTo(o.x2, o.y2); ctx.stroke();
+      if (o.t === "arrow") {
+        const a = Math.atan2(o.y2 - o.y1, o.x2 - o.x1), L = 12 + 2 * (o.w || 3);
+        ctx.beginPath(); ctx.moveTo(o.x2, o.y2);
+        ctx.lineTo(o.x2 - L * Math.cos(a - 0.45), o.y2 - L * Math.sin(a - 0.45));
+        ctx.lineTo(o.x2 - L * Math.cos(a + 0.45), o.y2 - L * Math.sin(a + 0.45)); ctx.closePath(); ctx.fill();
+      }
+    } else if (o.t === "rect") {
+      ctx.strokeRect(Math.min(o.x1, o.x2), Math.min(o.y1, o.y2), Math.abs(o.x2 - o.x1), Math.abs(o.y2 - o.y1));
+    } else if (o.t === "oval") {
+      ctx.beginPath(); ctx.ellipse((o.x1 + o.x2) / 2, (o.y1 + o.y2) / 2, Math.abs(o.x2 - o.x1) / 2, Math.abs(o.y2 - o.y1) / 2, 0, 0, 2 * Math.PI); ctx.stroke();
+    } else if (o.t === "text") {
+      ctx.font = FONT(o); ctx.textBaseline = "middle";
+      if (o.box) {
+        const b = textBox(ctx, o);
+        ctx.fillStyle = o.c; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(b.x, b.y, b.w, b.h, 5) : ctx.rect(b.x, b.y, b.w, b.h); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.fillText(o.s, o.x, o.y);
+      } else ctx.fillText(o.s, o.x, o.y);
+    }
+  }
+  ctx.restore();
+}
+function redraw() {
+  const cv = $("#pad"); if (!cv) return;
+  for (const o of [...fillSel]) if (!S.draw.includes(o)) fillSel.delete(o);
+  drawAll(cv.getContext("2d"), S.draw, fillSel);
+}
+
+/* ---------- Fill tool: fill the area(s) closed off by the selected lines ---------- */
+function traceStroke(ctx, o, width) {   // outline path of a stroke object, stroked at the given width
+  ctx.lineWidth = width; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.beginPath();
+  if (o.t === "path") { ctx.moveTo(o.pts[0][0], o.pts[0][1]); if (o.pts.length === 1) ctx.lineTo(o.pts[0][0] + 0.1, o.pts[0][1]); for (const q of o.pts) ctx.lineTo(q[0], q[1]); }
+  else if (o.t === "line" || o.t === "arrow") { ctx.moveTo(o.x1, o.y1); ctx.lineTo(o.x2, o.y2); }
+  else if (o.t === "rect") ctx.rect(Math.min(o.x1, o.x2), Math.min(o.y1, o.y2), Math.abs(o.x2 - o.x1), Math.abs(o.y2 - o.y1));
+  else if (o.t === "oval") ctx.ellipse((o.x1 + o.x2) / 2, (o.y1 + o.y2) / 2, Math.abs(o.x2 - o.x1) / 2, Math.abs(o.y2 - o.y1) / 2, 0, 0, 2 * Math.PI);
+  ctx.stroke();
+}
+const GAP = 8;   // gaps up to about this many pixels between line ends are bridged
+function fillSelected() {
+  if (!fillSel.size) { toast("Click the line(s) around the area first, then the color or pattern."); return; }
+  const c = document.createElement("canvas"); c.width = CW; c.height = CH;
+  const x = c.getContext("2d"); x.strokeStyle = "#000";
+  for (const o of fillSel) traceStroke(x, o, (o.w || 3) + GAP);
+  const a = x.getImageData(0, 0, CW, CH).data, N = CW * CH;
+  const wall = new Uint8Array(N); for (let i = 0; i < N; i++) wall[i] = a[i * 4 + 3] > 0 ? 1 : 0;
+  // everything reachable from the edge of the pad without crossing a selected line is "outside"
+  const out = new Uint8Array(N), q = new Int32Array(N); let h = 0, t = 0;
+  const push = (i) => { if (!wall[i] && !out[i]) { out[i] = 1; q[t++] = i; } };
+  for (let X = 0; X < CW; X++) { push(X); push((CH - 1) * CW + X); }
+  for (let Y = 0; Y < CH; Y++) { push(Y * CW); push(Y * CW + CW - 1); }
+  while (h < t) { const i = q[h++], X = i % CW; if (X > 0) push(i - 1); if (X < CW - 1) push(i + 1); if (i >= CW) push(i - CW); if (i < N - CW) push(i + CW); }
+  const m = new Uint8Array(N); let count = 0;
+  for (let i = 0; i < N; i++) if (!wall[i] && !out[i]) { m[i] = 1; count++; }
+  if (count < 40) { toast("Those lines don't close off an area. Make sure the ends meet, or select more lines.", 4000); return; }
+  // grow the area under the thickened lines so the fill meets the drawn line with no white gap
+  for (let k = 0; k < GAP / 2 + 3; k++) {
+    const add = [];
+    for (let i = 0; i < N; i++) if (!m[i] && wall[i]) { const X = i % CW; if ((X > 0 && m[i - 1]) || (X < CW - 1 && m[i + 1]) || (i >= CW && m[i - CW]) || (i < N - CW && m[i + CW])) add.push(i); }
+    add.forEach(i => m[i] = 1);
+  }
+  let x0 = CW, y0 = CH, x1 = -1, y1 = -1;
+  for (let i = 0; i < N; i++) if (m[i]) { const X = i % CW, Y = (i - X) / CW; if (X < x0) x0 = X; if (X > x1) x1 = X; if (Y < y0) y0 = Y; if (Y > y1) y1 = Y; }
+  const bw = x1 - x0 + 1, bh = y1 - y0 + 1, mc = document.createElement("canvas"); mc.width = bw; mc.height = bh;
+  const mx = mc.getContext("2d"), id = mx.createImageData(bw, bh);
+  for (let Y = 0; Y < bh; Y++) for (let X = 0; X < bw; X++) if (m[(Y + y0) * CW + X + x0]) id.data[(Y * bw + X) * 4 + 3] = 255;
+  mx.putImageData(id, 0, 0);
+  snap();
+  const f = { t: "fill", c: color, pat: fillPat, x: x0, y: y0, fw: bw, fh: bh, src: mc.toDataURL("image/png") };
+  // put the fill just below the lowest selected line, so it sits under the drawing
+  const idx = Math.min(...[...fillSel].map(o => S.draw.indexOf(o)).filter(i => i >= 0));
+  S.draw.splice(isFinite(idx) ? idx : S.draw.length, 0, f);
+  fillSel.clear(); redraw(); changed();
+}
+const fillCache = new Map();
+function fillMask(o) {
+  let e = fillCache.get(o.src);
+  if (!e) {
+    e = { ready: false, img: new Image() }; fillCache.set(o.src, e);
+    e.img.onload = () => {
+      const c = document.createElement("canvas"); c.width = o.fw; c.height = o.fh; c.getContext("2d").drawImage(e.img, 0, 0);
+      e.alpha = c.getContext("2d").getImageData(0, 0, o.fw, o.fh).data; e.ready = true; e.styled = {}; redraw();
+    };
+    e.img.src = o.src;
+  }
+  return e;
+}
+function fillHit(o, p) {
+  const e = fillMask(o); if (!e.ready) return false;
+  const X = Math.floor(p.x - o.x), Y = Math.floor(p.y - o.y);
+  return X >= 0 && Y >= 0 && X < o.fw && Y < o.fh && e.alpha[(Y * o.fw + X) * 4 + 3] > 0;
+}
+function patternTile(pat, c) {
+  const t = document.createElement("canvas"); t.width = t.height = 12;
+  const x = t.getContext("2d"); x.strokeStyle = c; x.fillStyle = c; x.lineWidth = 1.6;
+  const L = (a, b, cc, d) => { x.beginPath(); x.moveTo(a, b); x.lineTo(cc, d); x.stroke(); };
+  if (pat === "diag") { L(0, 12, 12, 0); L(-6, 6, 6, -6); L(6, 18, 18, 6); }
+  else if (pat === "cross") { L(0, 12, 12, 0); L(-6, 6, 6, -6); L(6, 18, 18, 6); L(0, 0, 12, 12); L(-6, 6, 6, 18); L(6, -6, 18, 6); }
+  else if (pat === "dots") { x.beginPath(); x.arc(3, 3, 1.7, 0, 7); x.arc(9, 9, 1.7, 0, 7); x.fill(); }
+  else if (pat === "horiz") { L(0, 3, 12, 3); L(0, 9, 12, 9); }
+  else if (pat === "vert") { L(3, 0, 3, 12); L(9, 0, 9, 12); }
+  else if (pat === "brick") { x.lineWidth = 1.2; L(0, 0.5, 12, 0.5); L(0, 6.5, 12, 6.5); L(0.5, 0, 0.5, 6); L(6.5, 6, 6.5, 12); }
+  return t;
+}
+function fillStyleFor(ctx, pat, c) {
+  if (pat === "solid") return c;
+  return ctx.createPattern(patternTile(pat, c), "repeat");
+}
+function drawFill(ctx, o) {
+  const e = fillMask(o); if (!e.ready) return;
+  const key = o.c + "|" + o.pat;
+  let tc = e.styled[key];
+  if (!tc) {
+    tc = document.createElement("canvas"); tc.width = o.fw; tc.height = o.fh;
+    const x = tc.getContext("2d");
+    x.globalAlpha = o.pat === "solid" ? 0.55 : 1;
+    x.fillStyle = fillStyleFor(x, o.pat, o.c); x.fillRect(0, 0, o.fw, o.fh);
+    x.globalAlpha = 1; x.globalCompositeOperation = "destination-in"; x.drawImage(e.img, 0, 0);
+    e.styled[key] = tc;
+  }
+  ctx.drawImage(tc, o.x, o.y);
+}
+function drawPatternSwatches() {
+  $$("[data-pat]").forEach(b => {
+    const cv = $("canvas", b), x = cv.getContext("2d");
+    x.clearRect(0, 0, cv.width, cv.height); x.fillStyle = "#fff"; x.fillRect(0, 0, cv.width, cv.height);
+    x.globalAlpha = b.dataset.pat === "solid" ? 0.55 : 1;
+    x.fillStyle = fillStyleFor(x, b.dataset.pat, color); x.fillRect(0, 0, cv.width, cv.height);
+  });
+}
+function openTextInput(p) {
+  const wrap = $("#padwrap"), r = $("#pad").getBoundingClientRect();
+  const old = $(".textin", wrap); if (old) old.remove();
+  const inp = document.createElement("input"); inp.type = "text"; inp.className = "textin"; inp.placeholder = "Type, then Enter";
+  inp.style.left = (p.x * r.width / CW) + "px"; inp.style.top = (p.y * r.height / CH - 16) + "px";
+  wrap.appendChild(inp); inp.focus(); setTimeout(() => { if (document.activeElement !== inp) inp.focus(); }, 0);
+  let done = false;
+  const commit = (keep) => {
+    if (done) return; done = true;
+    const s = inp.value.trim(); inp.remove();
+    if (keep && s) { snap(); S.draw.push({ t: "text", c: color, s, x: p.x, y: p.y }); redraw(); changed(); }
+  };
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") commit(true); if (e.key === "Escape") commit(false); });
+  inp.addEventListener("blur", () => commit(true));
+}
+function renderChips() {
+  const lines = String(S.s5 || "").split(/\n/).map(s => s.trim()).filter(Boolean);
+  const box = $("#chips");
+  box.innerHTML = lines.length
+    ? `<span class="note">Drag a label onto your drawing (or tap it):</span>` + lines.map((s, i) => `<span class="chip" data-i="${i}" title="${esc(s)}">${esc(s.length > 48 ? s.slice(0, 46) + "…" : s)}</span>`).join("")
+    : `<span class="empty">Your facts from Step 5 will appear here as labels you can drag onto the drawing.</span>`;
+  $$(".chip", box).forEach(ch => {
+    const text = lines[+ch.dataset.i];
+    ch.addEventListener("pointerdown", (e) => {
+      e.preventDefault(); ch.setPointerCapture(e.pointerId);
+      const g = ch.cloneNode(true); g.classList.add("ghost"); g.style.left = e.clientX + "px"; g.style.top = e.clientY + "px"; document.body.appendChild(g);
+      const start = { x: e.clientX, y: e.clientY }; let moved = false;
+      const mv = (ev) => { g.style.left = ev.clientX + "px"; g.style.top = ev.clientY + "px"; if (Math.hypot(ev.clientX - start.x, ev.clientY - start.y) > 5) moved = true; };
+      const up = (ev) => {
+        ch.removeEventListener("pointermove", mv); ch.removeEventListener("pointerup", up); ch.removeEventListener("pointercancel", up); g.remove();
+        const r = $("#pad").getBoundingClientRect();
+        let p = null;
+        if (moved && ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom) p = pt(ev);
+        else if (!moved) { const k = S.draw.filter(o => o.t === "text" && o.box).length; p = { x: 30 + (k % 3) * 300, y: 30 + Math.floor(k / 3) * 40 % (CH - 40) }; }
+        if (p) { snap(); S.draw.push({ t: "text", box: true, c: color === COLORS[0] ? "#1C5E8A" : color, s: text, x: p.x, y: p.y }); redraw(); changed(); }
+      };
+      ch.addEventListener("pointermove", mv); ch.addEventListener("pointerup", up); ch.addEventListener("pointercancel", up);
+    });
+  });
+}
+
+/* ---------- Step 8: calculation lines ---------- */
+const blankFactor = () => ({ num: "", den: "", exp: 1, nv: "", dv: "" });
+let lineOut = [];
+function renderSolve() {
+  $("#solve8").innerHTML = `
+    <p class="why">Build your calculation one line at a time.</p>
+    <ul class="tips">
+      <li><b>Factor-label line:</b> works like the Factor-Label Workbench. Set up the units first; when they cancel to your goal units, the numbers unlock.</li>
+      <li><b>Formula line:</b> for steps a conversion chain can't do, like <code>192.79 g - 88.32 g</code> or <code>pi * (0.0127 m)^2 * 6.1 m</code>.</li>
+      <li>Give a line a name, then use its result in a later line by typing the name in braces, like <code>{liquid mass}</code>.</li>
+    </ul>
+    <div id="lines"></div>
+    <div class="bar"><button class="btn" id="add-fl">+ Factor-label line</button><button class="btn" id="add-fx">+ Formula line</button></div>
+    <div class="parts" id="parts"></div>`;
+  $("#add-fl").onclick = () => { S.lines.push({ kind: "fl", name: "", start: "", goal: "", factors: [blankFactor()], phase: "units" }); renderLines(); changed(); };
+  $("#add-fx").onclick = () => { S.lines.push({ kind: "fx", name: "", expr: "", showIn: "" }); renderLines(); changed(); };
+  renderLines(); renderParts();
+}
+function renderLines() {
+  const box = $("#lines");
+  box.innerHTML = S.lines.map((L, i) => {
+    const head = `<div class="lhead"><span class="kind">Line ${i + 1}: ${L.kind === "fl" ? "Factor-label" : "Formula"}</span>
+      <input type="text" data-l="${i}" data-f="name" value="${esc(L.name)}" placeholder="Name this result (optional), e.g. liquid mass">
+      <button class="xbtn" data-rml="${i}" title="Remove this line">×</button></div>`;
+    if (L.kind === "fx") return `<div class="line fx">${head}
+      <input type="text" class="expr" data-l="${i}" data-f="expr" value="${esc(L.expr)}" placeholder="e.g. 192.79 g - 88.32 g    or    {liquid mass} / 91.1 mL" autocomplete="off" spellcheck="false">
+      <div class="fxrow">Show result in <input type="text" data-l="${i}" data-f="showIn" value="${esc(L.showIn)}" placeholder="units (optional)"></div>
+      <div class="res" id="res${i}"></div></div>`;
+    const unitsLocked = L.phase === "numbers";
+    const factors = L.factors.map((f, j) => `<span class="times">×</span>
+      <span class="frac">
+        ${unitsLocked ? `<input class="n" type="text" data-l="${i}" data-j="${j}" data-f="nv" value="${esc(f.nv)}" placeholder="number">` : ""}
+        <input type="text" data-l="${i}" data-j="${j}" data-f="num" value="${esc(f.num)}" placeholder="top units" ${unitsLocked ? "disabled" : ""} ${unitsLocked ? "" : 'style="grid-column:1/-1"'}>
+        <span class="rule"></span>
+        ${unitsLocked ? `<input class="n" type="text" data-l="${i}" data-j="${j}" data-f="dv" value="${esc(f.dv)}" placeholder="number">` : ""}
+        <input type="text" data-l="${i}" data-j="${j}" data-f="den" value="${esc(f.den)}" placeholder="bottom units" ${unitsLocked ? "disabled" : ""} ${unitsLocked ? "" : 'style="grid-column:1/-1"'}>
+        <select class="pw" data-l="${i}" data-j="${j}" data-f="exp" title="Raise this factor to a power" ${unitsLocked ? "disabled" : ""}>${[1, 2, 3].map(k => `<option value="${k}" ${f.exp === k ? "selected" : ""}>${k === 1 ? "¹" : k === 2 ? "²" : "³"}</option>`).join("")}</select>
+        ${unitsLocked ? "" : `<button class="xbtn rmf" data-rmf="${i}:${j}" title="Remove factor">×</button>`}
+      </span>`).join("");
+    return `<div class="line">${head}
+      <div class="chain">
+        <span class="qty"><span class="lbl">Start with</span><input type="text" data-l="${i}" data-f="start" value="${esc(L.start)}" placeholder="e.g. 25.4 mm or {name}"></span>
+        ${factors}
+        <span class="times">=</span>
+        <span class="goal"><span class="lbl">Goal units</span><input type="text" data-l="${i}" data-f="goal" value="${esc(L.goal)}" placeholder="e.g. m" ${unitsLocked ? "disabled" : ""}></span>
+      </div>
+      <div class="bar" style="margin:10px 0 0">
+        ${unitsLocked ? `<button class="btn small" data-edit="${i}">Edit units</button>` : `<button class="btn small" data-addf="${i}">+ Factor</button><button class="btn small primary" data-check="${i}">Check units</button>`}
+      </div>
+      <div id="msg${i}"></div><div class="res" id="res${i}"></div></div>`;
+  }).join("") || `<p class="note">No lines yet. Add one below.</p>`;
+  box.oninput = (e) => {
+    const t = e.target, i = t.dataset.l; if (i == null) return;
+    const L = S.lines[+i];
+    if (t.dataset.j != null) L.factors[+t.dataset.j][t.dataset.f] = t.dataset.f === "exp" ? +t.value : t.value;
+    else L[t.dataset.f] = t.value;
+    if (L.kind === "fl" && L.phase === "units") $("#msg" + i).innerHTML = "";
+    computeLines(); save();
+  };
+  box.onchange = box.oninput;
+  box.onclick = (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    const d = b.dataset;
+    if (d.rml != null) { S.lines.splice(+d.rml, 1); renderLines(); changed(); }
+    else if (d.addf != null) { S.lines[+d.addf].factors.push(blankFactor()); renderLines(); save(); }
+    else if (d.rmf) { const [i, j] = d.rmf.split(":").map(Number); const L = S.lines[i]; L.factors.splice(j, 1); renderLines(); save(); }
+    else if (d.check != null) checkUnits(+d.check);
+    else if (d.edit != null) { S.lines[+d.edit].phase = "units"; renderLines(); save(); }
+  };
+  computeLines();
+}
+function lineRefs(upto) {
+  const refs = {};
+  for (let k = 0; k < upto; k++) { const o = lineOut[k]; const n = (S.lines[k].name || "").trim().toLowerCase(); if (o && o.q && n) refs[n] = o.q; }
+  return refs;
+}
+function startQty(L, refs) {
+  const s = (L.start || "").trim();
+  const m = s.match(/^\{(.+)\}$/);
+  if (m) { const r = refs[m[1].trim().toLowerCase()]; return r ? { v: r.v, map: r.map } : { error: `There's no earlier line named “${m[1]}”.` }; }
+  if (!s) return { error: "Enter a starting quantity, like 25.4 mm." };
+  return PSC.parseQuantity(s);
+}
+function flUnits(L, refs) {
+  const s = startQty(L, refs);
+  if (s.error) return { error: "Start: " + s.error };
+  let map = s.map;
+  for (let j = 0; j < L.factors.length; j++) {
+    const f = L.factors[j];
+    if (!f.num.trim() || !f.den.trim()) return { error: `Factor ${j + 1}: enter units on both the top and the bottom.` };
+    const n = UE.parseExpr(PSC.normUnits(f.num)), d = UE.parseExpr(PSC.normUnits(f.den));
+    if (n.error) return { error: `Factor ${j + 1} (top): ${n.error}` };
+    if (d.error) return { error: `Factor ${j + 1} (bottom): ${d.error}` };
+    map = UE.mulMap(map, UE.mulMap({}, UE.mulMap(n.map, d.map, -1), f.exp || 1));
+  }
+  if (!L.goal.trim()) return { error: "Enter your goal units on the right." };
+  const g = UE.parseExpr(PSC.normUnits(L.goal));
+  if (g.error) return { error: "Goal units: " + g.error };
+  return { s, map, goal: g.map, ok: UE.eqMap(map, g.map) };
+}
+function checkUnits(i) {
+  const L = S.lines[i], r = flUnits(L, lineRefs(i)), box = $("#msg" + i);
+  if (r.error) { box.innerHTML = `<div class="lmsg bad">${esc(r.error)}</div>`; return; }
+  if (r.ok) { L.phase = "numbers"; renderLines(); save(); $("#msg" + i).innerHTML = `<div class="lmsg ok">The units cancel to <code>${esc(PSC.unitsText(r.goal) || "a plain number")}</code>. Now enter the numbers that make each factor a true equality.</div>`; return; }
+  const extra = UE.mulMap(r.map, r.goal, -1), top = [], bot = [];
+  for (const k in extra) (extra[k].exp > 0 ? top : bot).push(UE.unitText({ ...extra[k], exp: Math.abs(extra[k].exp) }));
+  const same = PSC.sameDims(UE.siOf(r.map).d, UE.siOf(r.goal).d);
+  box.innerHTML = `<div class="lmsg bad">Your units come out as <code>${esc(PSC.unitsText(r.map) || "no units")}</code>, but your goal is <code>${esc(PSC.unitsText(r.goal) || "no units")}</code>.
+    ${top.length ? ` Still on top: <code>${esc(top.join(", "))}</code>.` : ""}${bot.length ? ` Still on the bottom: <code>${esc(bot.join(", "))}</code>.` : ""}
+    ${same ? " They measure the same kind of thing, so you need another conversion factor." : ""}</div>`;
+}
+function computeLines() {
+  lineOut = [];
+  S.lines.forEach((L, i) => {
+    const refs = lineRefs(i), res = $("#res" + i);
+    let out = {};
+    try {
+      if (L.kind === "fx") {
+        if (!L.expr.trim()) out.empty = true;
+        else {
+          let q = PSC.evaluate(L.expr, refs);
+          if (L.showIn && L.showIn.trim()) q = PSC.convertTo(q, L.showIn);
+          out.q = q;
+        }
+      } else if (L.phase === "numbers") {
+        const r = flUnits(L, refs);
+        if (r.error) out.err = r.error;
+        else if (!r.ok) out.err = "The units no longer cancel. Click Edit units.";
+        else {
+          let v = r.s.v, missing = false;
+          for (const f of L.factors) {
+            const a = UE.parseNum(f.nv), b = UE.parseNum(f.dv);
+            if (!isFinite(a) || !isFinite(b) || b === 0) { missing = true; break; }
+            v *= Math.pow(a / b, f.exp || 1);
+          }
+          if (missing) out.wait = "Enter a number on the top and bottom of every factor.";
+          else out.q = { v, map: r.goal };
+        }
+      } else out.empty = true;
+    } catch (e) { out.err = e.message; }
+    lineOut.push(out);
+    if (res) res.innerHTML = out.q ? `= <b>${esc(PSC.qtyText(out.q))}</b>${L.name.trim() ? ` <span class="note">(saved as {${esc(L.name.trim())}})</span>` : ""}`
+      : out.err ? `<div class="lmsg bad">${esc(out.err)}</div>` : out.wait ? `<span class="note">${esc(out.wait)}</span>` : "";
+  });
+}
+function lastResult() { for (let k = lineOut.length - 1; k >= 0; k--) if (lineOut[k] && lineOut[k].q) return lineOut[k].q; return null; }
+
+/* ---------- final answers ---------- */
+function renderParts() {
+  const multi = P.parts.length > 1;
+  $("#parts").innerHTML = `<h4>Final answer${multi ? "s" : ""}</h4><p class="note">Only your final answer is graded. Answers within ${PSC.tolText("5%").replace("within ", "")} of the instructor's are correct (unless a part says otherwise). Include units when the answer has them; leave them off when it doesn't.</p>` +
+    P.parts.map(p => `<div class="part" id="part-${esc(p.part)}"></div>`).join("");
+  P.parts.forEach(drawPart);
+}
+function drawPart(p) {
+  const st = S.parts[p.part] = S.parts[p.part] || { tries: 0, correct: false, input: "", text: "", fb: "", hint: false, sol: false };
+  const el = $("#part-" + CSS.escape(p.part));
+  const label = `<div><b>${P.parts.length > 1 ? `Part ${esc(p.part)}: ` : ""}</b>${fmtText(p.prompt)}</div>`;
+  if (p.type === "ungraded") {
+    el.innerHTML = `${label}<textarea data-ug rows="3" placeholder="Your answer (not graded)">${esc(st.text)}</textarea>
+      ${p.model_solution ? `<div class="bar" style="margin-top:6px"><button class="btn small" data-show ${wordCount(st.text) >= MIN_WORDS ? "" : "disabled"}>Compare with the instructor's answer</button></div>` : ""}
+      ${st.sol && p.model_solution ? `<div class="reveal"><b>Instructor's answer</b>${fmtText(p.model_solution)}</div>` : ""}`;
+    const ta = $("textarea", el);
+    ta.oninput = () => { st.text = ta.value; const b = $("[data-show]", el); if (b) b.disabled = wordCount(st.text) < MIN_WORDS; save(); };
+    const b = $("[data-show]", el); if (b) b.onclick = () => { st.sol = true; drawPart(p); save(); };
+    return;
+  }
+  const showHint = st.tries >= 2 && !st.correct && p.hint, showSolBtn = st.correct || st.tries >= 5;
+  el.innerHTML = `${label}
+    <div class="ansrow" style="margin-top:6px">
+      <input type="text" data-ans value="${esc(st.input)}" placeholder="${p.units ? "number and units" : "number"}" ${st.correct ? "disabled" : ""} autocomplete="off" spellcheck="false">
+      ${st.correct ? "" : `<button class="btn primary small" data-go>Check answer</button><button class="btn small" data-last title="Copy the result of your last calculation line">Use my last result</button>`}
+      <span class="tries">${st.tries ? `Attempts: ${st.tries}${st.correct ? "" : ""}` : ""}${p.tolerance && p.tolerance !== "5%" ? ` · graded ${esc(PSC.tolText(p.tolerance))}` : ""}</span>
+    </div>
+    ${st.fb ? `<div class="fb ${st.correct ? "ok" : "bad"}">${esc(st.fb)}</div>` : ""}
+    ${showHint ? (st.hint ? `<div class="reveal"><b>Hint</b>${fmtText(p.hint)}</div>` : `<div class="bar" style="margin-top:6px"><button class="btn small" data-hint>Show a hint</button></div>`) : ""}
+    ${showSolBtn && p.model_solution ? (st.sol ? `<div class="reveal"><b>Instructor's solution</b>${fmtText(p.model_solution)}</div>` : `<div class="bar" style="margin-top:6px"><button class="btn small" data-sol>${st.correct ? "Compare with the instructor's solution" : "Show the solution"}</button></div>`) : ""}`;
+  const inp = $("[data-ans]", el);
+  inp.oninput = () => { st.input = inp.value; save(); };
+  inp.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); check(); } };
+  const check = () => {
+    if (!inp.value.trim()) { toast("Type your answer first."); return; }
+    const g = PSC.grade(p, inp.value);
+    st.tries++; st.correct = g.ok; st.fb = g.ok ? `Correct! (${st.tries} attempt${st.tries > 1 ? "s" : ""})` : g.msg;
+    if (!g.ok && st.tries === 2 && p.hint) st.fb += " A hint is available below.";
+    if (!g.ok && st.tries === 5) st.fb += " You can now see the solution below.";
+    drawPart(p); changed();
+  };
+  const go = $("[data-go]", el); if (go) go.onclick = check;
+  const last = $("[data-last]", el); if (last) last.onclick = () => {
+    const q = lastResult(); if (!q) { toast("No calculation result yet."); return; }
+    inp.value = st.input = PSC.qtyText(q).replace(/ × 10([⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)/, (m, s) => "e" + [...s].map(c => ({ "⁻": "-", "⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9" })[c]).join(""));
+    save(); inp.focus();
+  };
+  const h = $("[data-hint]", el); if (h) h.onclick = () => { st.hint = true; drawPart(p); save(); };
+  const s = $("[data-sol]", el); if (s) s.onclick = () => { st.sol = true; drawPart(p); save(); };
+}
+
+/* ---------- PDF export ---------- */
+function pdfSafe(s) {
+  const SUP = { "⁻": "-", "⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9" };
+  return String(s ?? "")
+    .replace(/[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, m => "^" + [...m].map(c => SUP[c]).join(""))
+    .replace(/[₀-₉]/g, c => String(c.charCodeAt(0) - 0x2080))
+    .replace(/−|–|—/g, "-").replace(/π/g, "pi").replace(/μ/g, "µ").replace(/→/g, "->")
+    .replace(/[“”]/g, '"').replace(/[‘’]/g, "'").replace(/…/g, "...").replace(/✓/g, "(ok)").replace(/✗/g, "(no)")
+    .replace(/[^\x00-\xFF]/g, "?");
+}
+async function exportPDF() {
+  let jsPDF;
+  try { jsPDF = (await loadScript(JSPDF, "jspdf")).jsPDF; } catch { toast("Couldn't load the PDF maker. Check your connection."); return; }
+  const doc = new jsPDF({ unit: "pt", format: "letter" });
+  const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 50, TW = W - 2 * M;
+  let y = M;
+  const need = (h) => { if (y + h > H - M) { doc.addPage(); y = M; } };
+  const para = (txt, size = 11, style = "normal", gap = 4) => {
+    doc.setFont("helvetica", style); doc.setFontSize(size);
+    const lines = doc.splitTextToSize(pdfSafe(txt), TW);
+    for (const l of lines) { need(size * 1.35); doc.text(l, M, y + size); y += size * 1.35; }
+    y += gap;
+  };
+  const head = (txt) => { y += 6; need(30); para(txt, 12.5, "bold", 2); };
+  para("Problem-Solving Coach", 18, "bold", 0);
+  para(`${P.id}  ·  ${P.topic}  ·  exported ${new Date().toLocaleString()}`, 9.5, "normal", 8);
+  para("Name: ______________________________", 11, "normal", 8);
+  head("The problem"); para(P.text);
+  head("Step 1: Relax"); para(S.ready ? `I can do this.${S.conf ? ` Confidence: ${S.conf} of 5.` : ""}` : "(not marked)");
+  head("Step 2: Read the problem");
+  para("Asked for (blue): " + (hlWords("blue").join(" | ") || "-"));
+  para("Given (orange): " + (hlWords("orange").join(" | ") || "-"));
+  head("Step 3: What the answer should look like"); para(S.s3 || "-");
+  head("Step 4: Picture");
+  const tmp = document.createElement("canvas"); tmp.width = CW * 1.5; tmp.height = CH * 1.5;
+  const tc = tmp.getContext("2d"); tc.setTransform(1.5, 0, 0, 1.5, 0, 0); drawAll(tc, S.draw);
+  const ih = TW * CH / CW; need(ih + 6);
+  doc.addImage(tmp.toDataURL("image/png"), "PNG", M, y, TW, ih); doc.setDrawColor(190); doc.rect(M, y, TW, ih); y += ih + 8;
+  head("Step 5: What I know"); para(S.s5 || "-");
+  head("Step 6: Key relationships"); para(S.s6 || "-");
+  head("Step 7: Plan"); para(S.s7 || "-");
+  head("Step 8: Solve");
+  if (!S.lines.length) para("(no calculation lines)");
+  S.lines.forEach((L, i) => {
+    const o = lineOut[i] || {};
+    let t = `Line ${i + 1}${L.name ? ` (${L.name})` : ""}: `;
+    if (L.kind === "fx") t += L.expr || "-";
+    else t += `${L.start} ` + L.factors.map(f => `x (${f.nv || "?"} ${f.num} / ${f.dv || "?"} ${f.den})${f.exp > 1 ? "^" + f.exp : ""}`).join(" ") + ` -> ${L.goal}`;
+    t += o.q ? `  =  ${PSC.qtyText(o.q)}` : "";
+    para(t, 10.5);
+  });
+  head("Final answer" + (P.parts.length > 1 ? "s" : ""));
+  P.parts.forEach(p => {
+    const st = S.parts[p.part] || {};
+    const label = (P.parts.length > 1 ? `Part ${p.part}: ` : "") + p.prompt;
+    para(label, 11, "bold", 1);
+    if (p.type === "ungraded") para(st.text || "-", 11, "normal", 6);
+    else para(`Answer: ${st.input || "-"}    Result: ${st.correct ? "Correct" : st.tries ? "Not yet correct" : "Not checked"}    Attempts: ${st.tries || 0}`, 11, "normal", 6);
+  });
+  const ok = await saveFile(`${P.id}-work.pdf`, doc.output("blob"), "application/pdf");
+  if (ok) toast("PDF ready.");
+}
+
+/* ---------- top bar ---------- */
+$("#pick").onchange = (e) => openProblem(e.target.value);
+$("#btn-pdf").onclick = exportPDF;
+$("#btn-reset").onclick = () => {
+  const b = $("#btn-reset");
+  if (b.dataset.armed) { LS.del("psc:work:" + P.id); delete b.dataset.armed; b.textContent = "Start over"; b.classList.remove("on"); openProblem(P.id); toast("Started over."); return; }
+  b.dataset.armed = "1"; b.textContent = "Click again to erase your work"; b.classList.add("on");
+  setTimeout(() => { delete b.dataset.armed; b.textContent = "Start over"; b.classList.remove("on"); }, 4000);
+};
+function showTab(which) {
+  $("#tab-solve").setAttribute("aria-selected", which === "solve"); $("#tab-inst").setAttribute("aria-selected", which === "inst");
+  $("#view-solve").hidden = which !== "solve"; $("#view-inst").hidden = which !== "inst";
+  if (which === "inst") renderInstructor();
+  if (location.hash !== "#" + (which === "inst" ? "instructor" : "solve")) history.replaceState(null, "", "#" + (which === "inst" ? "instructor" : "solve"));
+}
+$("#tab-solve").onclick = () => showTab("solve");
+$("#tab-inst").onclick = () => showTab("inst");
+
+/* ---------- Instructor ---------- */
+const COL_HELP = {
+  problem_id: ["Yes", "Groups the parts of one problem, e.g. DENS-001. Every row of a problem uses the same ID."],
+  topic: ["First row", "For grouping in the problem list, e.g. Density, Stoichiometry."],
+  chapter: ["No", "Course chapter or unit."],
+  problem_text: ["First row", "Full problem text. Use ^ for powers (m^3, 10^22) and _ for subscripts (H_2O)."],
+  part: ["Yes", "a, b, c …"],
+  part_prompt: ["Yes", "The question for this part."],
+  answer_type: ["Yes", "numeric (graded) or ungraded (free-text response)."],
+  answer_value: ["Numeric", "Your answer, e.g. 1.147 or 3.70e-5."],
+  answer_units: ["If it has units", "e.g. g/mL, kg/m^3, J/(mol K). Leave blank for a unitless answer."],
+  tolerance: ["No", "Blank = 5%. Or another percentage (2%), or an absolute tolerance (abs:0.00001)."],
+  alt_answers: ["No", "Other accepted answers, separated by semicolons, e.g. 75; 76."],
+  hint: ["Numeric", "Offered after 2 failed attempts."],
+  model_solution: ["Numeric", "Your worked solution. Offered after 5 failed attempts or a correct answer. Line breaks inside the cell are kept."],
+  background_image: ["No", "Optional image file name to draw over (works once the tool is on GitHub)."]
+};
+let pending = null, pendingJSON = "";
+function renderInstructor() {
+  const v = $("#view-inst");
+  if (v.dataset.built) return;
+  v.dataset.built = "1";
+  v.innerHTML = `
+  <div class="card">
+    <h2>1. Get the spreadsheet template</h2>
+    <p>One row per answer part. Rows with the same <code>problem_id</code> belong to the same problem. The template comes filled in with the three starter problems as examples.</p>
+    <div class="bar"><button class="btn primary" id="tpl-xlsx">Download template (.xlsx)</button><button class="btn" id="tpl-csv">Download template (.csv)</button></div>
+    <details><summary>Column guide</summary>
+      <table class="cols"><tr><th>Column</th><th>Required</th><th>What goes in it</th></tr>
+      ${PSC.COLS.map(c => `<tr><td><code>${c}</code></td><td>${esc(COL_HELP[c][0])}</td><td>${esc(COL_HELP[c][1])}</td></tr>`).join("")}</table>
+    </details>
+  </div>
+  <div class="card">
+    <h2>2. Upload your filled-in spreadsheet</h2>
+    <p>Excel (.xlsx), CSV, or tab-delimited text. Every row is checked before anything is converted.</p>
+    <input type="file" id="up" accept=".xlsx,.xls,.csv,.txt,.tsv">
+    <div id="up-out"></div>
+  </div>
+  <div class="card">
+    <h2>3. Convert to JSON</h2>
+    <p>The tool reads its problems from a file named <code>problems.json</code>. When the tool goes on GitHub, that file sits next to the page, and replacing it updates the problems your students see.</p>
+    <div class="bar"><button class="btn primary" id="to-json" disabled>Convert to JSON</button>
+      <button class="btn" id="dl-json" disabled>Download problems.json</button><button class="btn" id="cp-json" disabled>Copy JSON</button>
+      <button class="btn" id="try" disabled>Try these problems in the Solve tab</button></div>
+    <textarea class="json" id="json-out" readonly placeholder="The JSON appears here after you convert." hidden></textarea>
+  </div>
+  <div class="card">
+    <h2>Test a problems.json file</h2>
+    <p class="note">Load a problems.json to try its problems in the Solve tab on this device.</p>
+    <div class="bar"><input type="file" id="up-json" accept=".json"><span class="spacer"></span>
+      <button class="btn" id="clear-up">Remove uploaded problems</button></div>
+    <p class="note" id="up-count"></p>
+  </div>`;
+  const count = () => $("#up-count").textContent = uploaded.length ? `${uploaded.length} uploaded problem(s) on this device: ${uploaded.map(p => p.id).join(", ")}` : "No uploaded problems on this device. The Solve tab shows the starter problems.";
+  count();
+  $("#tpl-xlsx").onclick = async () => {
+    try {
+      const X = await loadScript(SHEETJS, "XLSX");
+      const wb = X.utils.book_new();
+      const ws = X.utils.aoa_to_sheet(PSC.problemsToRows(BUILTIN_PROBLEMS));
+      ws["!cols"] = PSC.COLS.map(c => ({ wch: { problem_text: 60, model_solution: 60, hint: 40, part_prompt: 40 }[c] || 14 }));
+      X.utils.book_append_sheet(wb, ws, "Problems");
+      const guide = X.utils.aoa_to_sheet([["Column", "Required", "What goes in it"], ...PSC.COLS.map(c => [c, ...COL_HELP[c]])]);
+      guide["!cols"] = [{ wch: 18 }, { wch: 14 }, { wch: 90 }];
+      X.utils.book_append_sheet(wb, guide, "Column guide");
+      const buf = X.write(wb, { bookType: "xlsx", type: "array" });
+      await saveFile("problem-template.xlsx", new Blob([buf]), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    } catch { toast("Couldn't build the Excel file here. Try the CSV template."); }
+  };
+  $("#tpl-csv").onclick = () => {
+    const csv = PSC.problemsToRows(BUILTIN_PROBLEMS).map(r => r.map(c => /[",\n]/.test(c) ? `"${String(c).replace(/"/g, '""')}"` : c).join(",")).join("\r\n");
+    saveFile("problem-template.csv", "﻿" + csv, "text/csv");
+  };
+  $("#up").onchange = async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    let rows;
+    try {
+      if (/\.(xlsx|xls)$/i.test(f.name)) {
+        const X = await loadScript(SHEETJS, "XLSX");
+        const wb = X.read(await f.arrayBuffer(), { type: "array" });
+        rows = X.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: "", raw: false }).filter(r => r.some(c => String(c).trim()));
+      } else rows = PSC.parseDelimited((await f.text()).replace(/^﻿/, ""));
+    } catch { $("#up-out").innerHTML = `<div class="errs">Couldn't read that file. Upload an .xlsx, .csv, or tab-delimited .txt file.</div>`; return; }
+    const r = PSC.rowsToProblems(rows);
+    pending = r.errors.length ? null : r.problems;
+    const nParts = r.problems.reduce((a, p) => a + p.parts.length, 0);
+    $("#up-out").innerHTML = (r.errors.length
+      ? `<div class="errs"><b>${r.errors.length} problem${r.errors.length > 1 ? "s" : ""} to fix before converting:</b><ul>${r.errors.map(x => `<li>${x.row ? `Row ${x.row}: ` : ""}${esc(x.msg)}</li>`).join("")}</ul></div>`
+      : `<div class="okbox"><b>All rows check out.</b> ${r.problems.length} problem(s), ${nParts} part(s).</div>`) +
+      `<div class="preview">${r.problems.map(p => `<div class="pp"><b>${esc(p.id)}</b> · ${esc(p.topic)}<div>${fmtText(p.text)}</div>
+        <ul>${p.parts.map(x => `<li>${esc(x.part)}: ${fmtText(x.prompt)} → ${x.type === "numeric" ? `<b>${esc(UE.fmt(x.value, 6))} ${esc(x.units || "")}</b> (${esc(PSC.tolText(x.tolerance))})${x.alt_answers && x.alt_answers.length ? `; also accepts ${esc(x.alt_answers.join(", "))}` : ""}` : "<i>ungraded</i>"}</li>`).join("")}</ul></div>`).join("")}</div>`;
+    $("#to-json").disabled = !pending;
+    ["#dl-json", "#cp-json", "#try"].forEach(s => $(s).disabled = true); $("#json-out").hidden = true;
+  };
+  $("#to-json").onclick = () => {
+    if (!pending) return;
+    pendingJSON = PSC.toJSON(pending);
+    const t = $("#json-out"); t.value = pendingJSON; t.hidden = false;
+    ["#dl-json", "#cp-json", "#try"].forEach(s => $(s).disabled = false);
+  };
+  $("#dl-json").onclick = () => saveFile("problems.json", pendingJSON, "application/json");
+  $("#cp-json").onclick = async () => { try { await navigator.clipboard.writeText(pendingJSON); toast("JSON copied."); } catch { $("#json-out").select(); toast("Press Ctrl+C (or ⌘C) to copy."); } };
+  $("#try").onclick = () => { addUploaded(pending); count(); };
+  $("#up-json").onchange = async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    try { addUploaded(PSC.fromJSON(await f.text())); count(); } catch (err) { toast("That isn't a valid problems.json: " + err.message, 4000); }
+  };
+  $("#clear-up").onclick = () => { uploaded = []; LS.set("psc:uploaded", uploaded); count(); fillPicker(); toast("Uploaded problems removed."); };
+}
+function addUploaded(list) {
+  const ids = new Set(list.map(p => p.id));
+  uploaded = [...uploaded.filter(p => !ids.has(p.id)), ...list];
+  LS.set("psc:uploaded", uploaded);
+  fillPicker(list[0] && list[0].id);
+  showTab("solve");
+  toast(`${list.length} problem(s) added to the Solve tab.`);
+}
+
+/* ---------- start ---------- */
+fillPicker();
+showTab(location.hash === "#instructor" ? "inst" : "solve");
+// On GitHub Pages, problems.json sits next to this page and replaces the starter problems.
+(async () => {
+  try {
+    const r = await fetch("problems.json", { cache: "no-cache" });
+    if (!r.ok) return;
+    const list = PSC.fromJSON(await r.text());
+    if (list.length) { siteProblems = list; fillPicker(P && P.id); }
+  } catch { /* opened as a single file or inside a sandbox: keep the starter problems */ }
+})();
+
+</script>
+</body>
+</html>

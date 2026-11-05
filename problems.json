@@ -1,0 +1,535 @@
+{
+  "format": "problem-solving-coach",
+  "version": 1,
+  "problems": [
+    {
+      "id": "DENS-001",
+      "topic": "Density",
+      "chapter": "1",
+      "text": "A graduated cylinder is found to weigh 88.32 g. When 50 mL of water is added, the cylinder and water weigh 137.29 g. Next, 50 mL of antifreeze is added, and the cylinder and its contents now weigh 192.79 g. The cylinder is now found to contain 91.1 mL of liquid. What is the density in g/mL of the cylinder's contents? (Volumes of liquids mixed together are not always additive.)",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What is the density of the cylinder's contents?",
+          "type": "numeric",
+          "value": 1.147,
+          "units": "g/mL",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "The mass of the contents is the total mass minus the empty cylinder. The volume is what you read on the cylinder (91.1 mL), not 50 mL + 50 mL.",
+          "model_solution": "Plan: find the mass of the contents, find their volume, then divide.\nLiquid mass = 192.79 g − 88.32 g = 104.47 g\nVolume of contents = 91.1 mL (read from the cylinder; mixed volumes are not additive)\nDensity = 104.47 g / 91.1 mL = 1.147 g/mL\nThe 137.29 g reading is not needed."
+        }
+      ]
+    },
+    {
+      "id": "ROD-001",
+      "topic": "Density",
+      "chapter": "1",
+      "text": "A bundle of cylindrical steel rods weighs 1850 kg. Each rod is 6.1 m long with a diameter of 25.4 mm. How many rods are in the bundle? The volume of a cylinder is πr^2h, where r is the radius and h is the height. The density of steel is 7930 kg/m^3.",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "How many rods are in the bundle?",
+          "type": "numeric",
+          "value": 75.5,
+          "units": "",
+          "tolerance": "5%",
+          "alt_answers": [
+            "75",
+            "76"
+          ],
+          "hint": "Find the mass of ONE rod first: radius from the diameter (convert mm to m), then volume, then mass from the density. Then: number of rods × mass per rod = bundle mass.",
+          "model_solution": "r = 25.4 mm / 2 = 12.7 mm = 0.0127 m\nV = π(0.0127 m)^2(6.1 m) = 3.091 × 10^-3 m^3\nMass of one rod = 3.091 × 10^-3 m^3 × 7930 kg/m^3 = 24.51 kg\nNumber of rods = 1850 kg / 24.51 kg = 75.5, so about 75–76 rods."
+        }
+      ]
+    },
+    {
+      "id": "NEON-001",
+      "topic": "Atoms & gases",
+      "chapter": "2",
+      "text": "A 1 L sample of gaseous neon contains 2.69 x 10^22 atoms per liter. The atomic radius of neon is 69 pm. The volume of a sphere is V = (4/3)πR^3, where R is the radius.",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What fraction of the total volume do the atoms themselves occupy?",
+          "type": "numeric",
+          "value": 0.000037,
+          "units": "",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Volume of one atom × number of atoms, divided by the 1 L total. Watch the units: pm → m → m^3 → L (1 m^3 = 1000 L).",
+          "model_solution": "V(one atom) = (4/3)π(69 × 10^-12 m)^3 = 1.376 × 10^-30 m^3 = 1.376 × 10^-27 L\nVolume of all atoms = 2.69 × 10^22 × 1.376 × 10^-27 L = 3.70 × 10^-5 L\nFraction occupied = 3.70 × 10^-5 L / 1 L = 3.70 × 10^-5"
+        },
+        {
+          "part": "b",
+          "prompt": "What fraction of the total volume is empty space?",
+          "type": "numeric",
+          "value": 0.99996,
+          "units": "",
+          "tolerance": "abs:0.00001",
+          "alt_answers": [],
+          "hint": "Empty fraction = 1 − occupied fraction.",
+          "model_solution": "Empty fraction = 1 − 3.70 × 10^-5 = 0.99996 (about 99.996% empty)"
+        },
+        {
+          "part": "c",
+          "prompt": "What does this tell you about the separation between atoms in the gas phase?",
+          "type": "ungraded",
+          "model_solution": "Almost all of a gas is empty space: the atoms are very far apart compared with their own size."
+        }
+      ]
+    },
+    {
+      "id": "MEAS-001",
+      "topic": "Measurement & density",
+      "chapter": "1",
+      "text": "The gas tank of a certain luxury car holds 22.3 gallons according to the owner's manual. The density of gasoline is 0.8206 g/mL. (1 gal = 3.785 L)",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What is the mass of the fuel in a full tank, in kilograms?",
+          "type": "numeric",
+          "value": 69.27,
+          "units": "kg",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Convert gallons → liters → milliliters, then use the density to get grams, then grams → kilograms.",
+          "model_solution": "22.3 gal × (3.785 L / 1 gal) × (1000 mL / 1 L) = 8.441 × 10^4 mL\n8.441 × 10^4 mL × (0.8206 g / 1 mL) = 6.927 × 10^4 g = 69.3 kg\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 1.6 (gas tank). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        },
+        {
+          "part": "b",
+          "prompt": "What is the mass of the fuel in pounds?",
+          "type": "numeric",
+          "value": 152.7,
+          "units": "lb",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Start from the mass in grams (or kg) and use 1 lb = 453.6 g.",
+          "model_solution": "6.927 × 10^4 g × (1 lb / 453.6 g) = 152.7 lb\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 1.6 (gas tank). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "MEAS-002",
+      "topic": "Measurement & density",
+      "chapter": "1",
+      "text": "An instructor preparing for a lab needs 225 g of phosphoric acid. The only container available is a 150-mL Erlenmeyer flask. The density of phosphoric acid is 1.83 g/mL.",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What volume does 225 g of phosphoric acid occupy?",
+          "type": "numeric",
+          "value": 123,
+          "units": "mL",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Density tells you grams per milliliter. Which way do you flip it so grams cancel?",
+          "model_solution": "225 g × (1 mL / 1.83 g) = 123 mL\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 1.6 (phosphoric acid). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        },
+        {
+          "part": "b",
+          "prompt": "Is the 150-mL flask large enough? Explain.",
+          "type": "ungraded",
+          "model_solution": "Yes. The acid occupies about 123 mL, which is less than the flask's 150 mL.\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 1.6 (phosphoric acid). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "MEAS-003",
+      "topic": "Measurement & units",
+      "chapter": "1",
+      "text": "A Toyota Prius Hybrid uses 59.7 L of gasoline to drive from San Francisco to Seattle, a distance of 1300 km. (1 mi = 1.609 km; 1 gal = 3.785 L)",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What was the average fuel economy, in miles per gallon?",
+          "type": "numeric",
+          "value": 51.22,
+          "units": "mi/gal",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Convert the distance to miles and the fuel to gallons separately, then divide miles by gallons.",
+          "model_solution": "1300 km × (1 mi / 1.609 km) = 808 mi\n59.7 L × (1 gal / 3.785 L) = 15.77 gal\nFuel economy = 808 mi / 15.77 gal = 51.2 mi/gal\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Example 1.10, Check Your Learning. https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        },
+        {
+          "part": "b",
+          "prompt": "If gasoline costs $3.90 per gallon, what was the fuel cost for the trip, in dollars? (Enter just the number.)",
+          "type": "numeric",
+          "value": 61.51,
+          "units": "",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "You already found the gallons used in part a. Multiply by the price per gallon.",
+          "model_solution": "15.77 gal × ($3.90 / 1 gal) = $61.51\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Example 1.10, Check Your Learning. https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "MEAS-004",
+      "topic": "Measurement & density",
+      "chapter": "1",
+      "text": "The mercury content of a stream was measured at 0.68 parts per billion (ppb) by weight, where 1 ppb means 1 ng of Hg per 1 g of water. The density of the water is 0.998 g/mL.",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What mass of mercury, in grams, is present in 15.0 L of the stream water?",
+          "type": "numeric",
+          "value": 0.00001018,
+          "units": "g",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "First find the mass of 15.0 L of water (L → mL → g). Then use 0.68 ng Hg per 1 g of water, and convert ng to g.",
+          "model_solution": "15.0 L × (1000 mL / 1 L) × (0.998 g / 1 mL) = 1.497 × 10^4 g water\n1.497 × 10^4 g water × (0.68 ng Hg / 1 g water) = 1.018 × 10^4 ng Hg\n1.018 × 10^4 ng × (1 g / 10^9 ng) = 1.02e-05 g Hg\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 1.6 (mercury in a stream). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "MOLE-001",
+      "topic": "Moles & molar mass",
+      "chapter": "3",
+      "text": "A 55-kg woman has 7.5 x 10^-3 mol of hemoglobin (molar mass = 64,456 g/mol) in her blood.",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "How many hemoglobin molecules is this? (Enter just the number.)",
+          "type": "numeric",
+          "value": 4.517e+21,
+          "units": "",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Use Avogadro's number: 6.022 × 10^23 molecules per mole.",
+          "model_solution": "7.5 × 10^-3 mol × (6.022 × 10^23 molecules / 1 mol) = 4.52 × 10^21 molecules\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 3.1 (hemoglobin). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        },
+        {
+          "part": "b",
+          "prompt": "What is the mass of this hemoglobin in grams?",
+          "type": "numeric",
+          "value": 483.4,
+          "units": "g",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Use the molar mass: 64,456 g per mole.",
+          "model_solution": "7.5 × 10^-3 mol × (64,456 g / 1 mol) = 483 g\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 3.1 (hemoglobin). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "MOLE-002",
+      "topic": "Moles & molar mass",
+      "chapter": "3",
+      "text": "A tube of toothpaste contains 0.76 g of sodium monofluorophosphate (Na_2PO_3F) in 100 mL of toothpaste.",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What mass of fluorine atoms, in milligrams, is present in the 100 mL?",
+          "type": "numeric",
+          "value": 100.3,
+          "units": "mg",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Find the moles of Na_2PO_3F from its molar mass. Each formula unit has one F atom, so moles of F = moles of Na_2PO_3F.",
+          "model_solution": "Molar mass Na_2PO_3F = 143.95 g/mol\n0.76 g × (1 mol / 143.95 g) = 5.280 × 10^-3 mol Na_2PO_3F = mol F\n5.280 × 10^-3 mol F × (19.00 g / 1 mol) = 0.1003 g = 100 mg F\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 3.1 (toothpaste). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        },
+        {
+          "part": "b",
+          "prompt": "How many fluorine atoms are present? (Enter just the number.)",
+          "type": "numeric",
+          "value": 3.179e+21,
+          "units": "",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Moles of F × Avogadro's number.",
+          "model_solution": "5.280 × 10^-3 mol F × (6.022 × 10^23 atoms / 1 mol) = 3.18 × 10^21 F atoms\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 3.1 (toothpaste). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "SOLN-001",
+      "topic": "Solutions",
+      "chapter": "3",
+      "text": "The US Environmental Protection Agency limits hexavalent chromium discharged into sewers to 0.50 mg of chromium per liter. A factory discharges its chromium as potassium dichromate, K_2Cr_2O_7.",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What is the maximum permissible molarity of K_2Cr_2O_7?",
+          "type": "numeric",
+          "value": 0.000004808,
+          "units": "M",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Start with 0.50 mg Cr in 1 L. Convert mg Cr → g Cr → mol Cr. Each K_2Cr_2O_7 contains 2 Cr atoms.",
+          "model_solution": "0.50 mg Cr × (1 g / 1000 mg) × (1 mol Cr / 52.00 g Cr) = 9.62 × 10^-6 mol Cr\n9.62 × 10^-6 mol Cr × (1 mol K_2Cr_2O_7 / 2 mol Cr) = 4.81 × 10^-6 mol K_2Cr_2O_7\nPer 1 L of solution: 4.81 × 10^-6 M\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 3.3 (EPA chromium limit). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "SOLN-002",
+      "topic": "Solutions",
+      "chapter": "3",
+      "text": "A general chemistry experiment calls for 250 mL of 2.00 M HCl. The stockroom has concentrated 11.9 M HCl.",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What volume of 11.9 M HCl is needed?",
+          "type": "numeric",
+          "value": 42.02,
+          "units": "mL",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Moles of HCl don't change when you dilute: M_1V_1 = M_2V_2.",
+          "model_solution": "Moles needed = 2.00 mol/L × 0.250 L = 0.500 mol HCl\nVolume of stock = 0.500 mol × (1 L / 11.9 mol) = 0.0420 L = 42.0 mL\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 3.3 (dilution of HCl). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "SOLN-003",
+      "topic": "Gases",
+      "chapter": "9",
+      "text": "You need to prepare 1.25 L of 3.20 M hydrochloric acid by dissolving HCl gas in water. The HCl gas is measured at 30.0 °C and 745 torr. Assume ideal behavior. (R = 0.08206 L·atm/(mol·K); 760 torr = 1 atm)",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "How many liters of HCl gas are required?",
+          "type": "numeric",
+          "value": 101.5,
+          "units": "L",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "First find the moles of HCl needed from the molarity and volume. Then use PV = nRT with T in kelvin and P in atm.",
+          "model_solution": "n = 3.20 mol/L × 1.25 L = 4.00 mol HCl\nT = 30.0 + 273.15 = 303.15 K;  P = 745 torr × (1 atm / 760 torr) = 0.980 atm\nV = nRT/P = (4.00 mol)(0.08206 L·atm/(mol·K))(303.15 K) / 0.980 atm = 101.5 L\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 11.3 (HCl gas for a solution). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "STOI-001",
+      "topic": "Stoichiometry",
+      "chapter": "4",
+      "text": "Silicon nitride is a very hard, heat-resistant ceramic used in jet-engine turbine blades. It forms by the reaction 3 Si(s) + 2 N_2(g) → Si_3N_4(s). A chemist reacts 2.00 g of Si with 1.50 g of N_2.",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "Which reactant is limiting? Explain how you know.",
+          "type": "ungraded",
+          "model_solution": "Si is limiting. 2.00 g Si = 0.0712 mol, which could make 0.0237 mol Si_3N_4; 1.50 g N_2 = 0.0535 mol, which could make 0.0268 mol Si_3N_4. Si makes less product.\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Example 4.12. https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        },
+        {
+          "part": "b",
+          "prompt": "What mass of Si_3N_4 can form?",
+          "type": "numeric",
+          "value": 3.33,
+          "units": "g",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Find how much Si_3N_4 each reactant could make. The smaller amount wins.",
+          "model_solution": "Si: 2.00 g × (1 mol / 28.09 g) × (1 mol Si_3N_4 / 3 mol Si) = 0.0237 mol Si_3N_4\nN_2: 1.50 g × (1 mol / 28.01 g) × (1 mol Si_3N_4 / 2 mol N_2) = 0.0268 mol Si_3N_4\nSi is limiting: 0.0237 mol × (140.28 g / 1 mol) = 3.33 g Si_3N_4\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Example 4.12. https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "STOI-002",
+      "topic": "Stoichiometry",
+      "chapter": "4",
+      "text": "Hydrogen and oxygen react to form water: 2 H_2(g) + O_2(g) → 2 H_2O(l). A mixture of 5.00 g of H_2 and 10.0 g of O_2 reacts completely.",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What mass of water forms?",
+          "type": "numeric",
+          "value": 11.26,
+          "units": "g",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Find the moles of each reactant and decide which runs out first, using the 2:1 ratio.",
+          "model_solution": "H_2: 5.00 g / 2.016 g/mol = 2.48 mol;  O_2: 10.0 g / 32.00 g/mol = 0.3125 mol\nO_2 needs only 0.625 mol H_2, so O_2 is limiting.\n0.3125 mol O_2 × (2 mol H_2O / 1 mol O_2) × (18.02 g / 1 mol) = 11.3 g H_2O\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Example 4.12, Check Your Learning. https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        },
+        {
+          "part": "b",
+          "prompt": "What mass of the excess reactant is left over?",
+          "type": "numeric",
+          "value": 3.74,
+          "units": "g",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Subtract the moles of H_2 used (from the limiting O_2) from the moles you started with.",
+          "model_solution": "H_2 used = 0.3125 mol O_2 × (2 mol H_2 / 1 mol O_2) = 0.625 mol\nH_2 left = 2.480 − 0.625 = 1.855 mol × 2.016 g/mol = 3.74 g H_2\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Example 4.12, Check Your Learning. https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "STOI-003",
+      "topic": "Stoichiometry",
+      "chapter": "4",
+      "text": "Freon-12, CF_2Cl_2, is made by the reaction CCl_4 + 2 HF → CF_2Cl_2 + 2 HCl. A reaction of 32.9 g of CCl_4 with excess HF produces 12.5 g of CF_2Cl_2.",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What is the percent yield? (Enter the percent, e.g. 75.0 or 75.0%.)",
+          "type": "numeric",
+          "value": 48.33,
+          "units": "",
+          "tolerance": "5%",
+          "alt_answers": [
+            "48.3%"
+          ],
+          "hint": "Find the theoretical yield of CF_2Cl_2 from 32.9 g CCl_4 (1:1 mole ratio). Percent yield = actual / theoretical × 100.",
+          "model_solution": "32.9 g CCl_4 × (1 mol / 153.81 g) × (1 mol CF_2Cl_2 / 1 mol CCl_4) × (120.91 g / 1 mol) = 25.9 g (theoretical)\nPercent yield = 12.5 g / 25.9 g × 100 = 48.3%\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Example 4.13, Check Your Learning. https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "GAS-001",
+      "topic": "Gases",
+      "chapter": "9",
+      "text": "An automobile air bag inflated to a volume of 66.8 L at 25 °C contains 77.8 g of nitrogen gas, N_2. (R = 8.314 J/(mol·K) = 8.314 Pa·m^3/(mol·K); 1 L = 10^-3 m^3)",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What is the pressure in the bag, in kilopascals?",
+          "type": "numeric",
+          "value": 103.1,
+          "units": "kPa",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Moles of N_2 from its molar mass, T in kelvin, then P = nRT/V. Watch the volume units: with R = 8.314, V must be in m^3 and P comes out in Pa.",
+          "model_solution": "n = 77.8 g / 28.01 g/mol = 2.777 mol;  T = 298.15 K;  V = 0.0668 m^3\nP = nRT/V = (2.777)(8.314)(298.15) / 0.0668 = 1.03e+05 Pa = 103.1 kPa\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 9.2 (air bag). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "GAS-002",
+      "topic": "Gases",
+      "chapter": "9",
+      "text": "A weather balloon contains 8.80 mol of helium at a pressure of 0.992 atm and a temperature of 25 °C at ground level. (R = 0.08206 L·atm/(mol·K))",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What is the volume of the balloon?",
+          "type": "numeric",
+          "value": 217,
+          "units": "L",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Use PV = nRT with T in kelvin.",
+          "model_solution": "V = nRT/P = (8.80 mol)(0.08206)(298.15 K) / 0.992 atm = 217 L\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 9.2 (weather balloon). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "GAS-003",
+      "topic": "Gases",
+      "chapter": "9",
+      "text": "A high-altitude balloon is filled with 1.41 x 10^4 L of hydrogen at 21 °C and 745 torr. The balloon rises to a height of 20 km, where the temperature is −48 °C and the pressure is 63.1 torr.",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What is the volume of the balloon at 20 km?",
+          "type": "numeric",
+          "value": 127400,
+          "units": "L",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "The amount of gas doesn't change: P_1V_1/T_1 = P_2V_2/T_2. Temperatures must be in kelvin.",
+          "model_solution": "T_1 = 294.15 K;  T_2 = 225.15 K\nV_2 = V_1 × (P_1/P_2) × (T_2/T_1) = 1.41 × 10^4 L × (745/63.1) × (225.15/294.15) = 1.27e+05 L\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 9.2 (high-altitude balloon). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "GAS-004",
+      "topic": "Gases",
+      "chapter": "9",
+      "text": "A cylinder of medical oxygen has a volume of 35.4 L and contains O_2 at 151 atm and 25 °C.",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What volume would this oxygen occupy at normal body conditions, 1.00 atm and 37 °C?",
+          "type": "numeric",
+          "value": 5561,
+          "units": "L",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Same gas, new conditions: P_1V_1/T_1 = P_2V_2/T_2, with T in kelvin.",
+          "model_solution": "V_2 = 35.4 L × (151 atm / 1.00 atm) × (310.15 K / 298.15 K) = 5.56e+03 L\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 9.2 (medical oxygen). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "GAS-005",
+      "topic": "Gases",
+      "chapter": "9",
+      "text": "A 20.0-L cylinder holding 11.34 kg of butane, C_4H_10, is opened to the atmosphere. Gas escapes until the pressure in the cylinder equals atmospheric pressure, 0.983 atm, at 27 °C. (R = 0.08206 L·atm/(mol·K))",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What mass of butane gas remains in the cylinder?",
+          "type": "numeric",
+          "value": 46.4,
+          "units": "g",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "The 11.34 kg doesn't matter for the final state. Use PV = nRT for the gas left in 20.0 L, then convert moles to grams.",
+          "model_solution": "n = PV/RT = (0.983 atm)(20.0 L) / [(0.08206)(300.15 K)] = 0.7982 mol\nMolar mass C_4H_10 = 58.12 g/mol;  mass = 0.7982 mol × 58.12 g/mol = 46.4 g\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 9.2 (butane cylinder). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "GAS-006",
+      "topic": "Gases",
+      "chapter": "9",
+      "text": "As 1 g of radium decays over 1 year, it produces 1.16 x 10^18 alpha particles, and each one becomes an atom of helium gas. The helium occupies 125 mL at 25 °C. (R = 8.314 Pa·m^3/(mol·K))",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What is the pressure of the helium, in pascals?",
+          "type": "numeric",
+          "value": 38.2,
+          "units": "Pa",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Atoms → moles with Avogadro's number. Then P = nRT/V with V in m^3 (1 mL = 10^-6 m^3).",
+          "model_solution": "n = 1.16 × 10^18 atoms / 6.022 × 10^23 = 1.926 × 10^-6 mol\nP = nRT/V = (1.926 × 10^-6)(8.314)(298.15) / (1.25 × 10^-4 m^3) = 38.2 Pa\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 9.2 (helium from radium). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    },
+    {
+      "id": "GAS-007",
+      "topic": "Gases",
+      "chapter": "9",
+      "text": "A balloon with a volume of 100.21 L at 21 °C and 0.981 atm is released and just clears the top of Mount Crumpit in British Columbia. At the top, its volume is 144.53 L and the temperature is 5.24 °C.",
+      "background_image": "",
+      "parts": [
+        {
+          "part": "a",
+          "prompt": "What pressure does the balloon experience as it clears the mountain?",
+          "type": "numeric",
+          "value": 0.6437,
+          "units": "atm",
+          "tolerance": "5%",
+          "alt_answers": [],
+          "hint": "Same gas: P_1V_1/T_1 = P_2V_2/T_2. Solve for P_2, with T in kelvin.",
+          "model_solution": "P_2 = P_1 × (V_1/V_2) × (T_2/T_1) = 0.981 atm × (100.21/144.53) × (278.39/294.15) = 0.644 atm\n\nSource: adapted from OpenStax, Chemistry 2e (Flowers, Theopold, Langley, Robinson), Exercises, Section 9.2 (Mount Crumpit). https://openstax.org/books/chemistry-2e. Licensed CC BY-NC-SA 4.0."
+        }
+      ]
+    }
+  ]
+}
