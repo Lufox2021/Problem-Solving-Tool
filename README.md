@@ -47,6 +47,7 @@ Keep `problems-master.xlsx` up to date as well, so it stays the master copy.
 | `problems.json` | The problem set the tool loads (51 problems) |
 | `spreadsheets/problems-master.xlsx` | Editable master copy of all problems |
 | `spreadsheets/problem-template.xlsx` | Starter template with three example problems |
+| `docs/SPEC.md` | Full specification: design decisions, grading rules, problem-writing conventions |
 
 ## Credits
 
