@@ -29,7 +29,7 @@ The tool builds the method into the screen layout. Steps 1–7 are an ungraded w
 
 ## 3. Choosing a problem
 
-- **Problem type buttons** sit at the top of the Solve tab: All, Measurement & units, Measurement & density, Percent & composition, Atoms & scale, Moles & molar mass, Solutions, Stoichiometry, Gases, Challenge.
+- **Problem type buttons** sit at the top of the Solve tab: All, Measurement & units, Measurement & density, Percent & composition, Atoms & scale, Moles & molar mass, Solutions, Stoichiometry, Gases, Challenge, Lecture.
   - Each button shows how many problems it has.
   - The buttons come from the `topic` column. A new topic gets its own button automatically, after the standard ones.
 - **The problem list** below the buttons shows only the chosen type.
@@ -173,7 +173,7 @@ The spreadsheet is never read by the tool directly. It's the source the instruct
 - **For unitless answers,** add "(Enter just the number.)" to the prompt. For percent answers, list the % form in `alt_answers`.
 - **Avoid copyrighted text.** Problems from commercial textbooks are not copied. Use openly licensed sources with credit, or write original problems.
 
-## 10. Current problem set (51 problems)
+## 10. Current problem set (58 problems)
 
 | Group | IDs | Problems | Source |
 |---|---|---|---|
@@ -181,6 +181,7 @@ The spreadsheet is never read by the tool directly. It's the source the instruct
 | Adapted from OpenStax | MEAS-001–004, MOLE-, SOLN-, STOI-, GAS- | 19 | OpenStax *Chemistry 2e* (CC BY-NC-SA 4.0), reworded and recalculated; each solution ends with a credit line |
 | Original Chapter 1 | MEAS-101–110, PCT-101–103 | 13 | Written for this tool, on Chapter 1 problem types |
 | Original cumulative & challenge | CUM-101–109, CHAL-101–107 | 16 | Written for this tool, on the skills in Chapter 1 cumulative and challenge problems |
+| Lecture (topic "Lecture") | LCD2-045, -059, -060, -061; LCD3-036, -045, -057 | 7 | Instructor's lecture slides: Atoms & Elements (chapter 2) and The Quantum-Mechanical Atom (chapter 3). The ID gives the chapter and slide number. |
 
 All answer keys were checked by solving each problem a second time in the tool's own calculator.
 
@@ -189,6 +190,7 @@ All answer keys were checked by solving each problem a second time in the tool's
 - **Based on** the Factor-Label Workbench engine, with these additions:
   - temperature (**K**)
   - molarity (**M**, **mM**)
+  - **Hz**, **eV** (with prefixes) and **carat**
   - "J/(g K)" and "J/(mol K)" read as kelvin, not potassium
   - roots of quantities with units
 - **Supported:**
